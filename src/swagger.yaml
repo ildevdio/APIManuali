@@ -1,0 +1,851 @@
+openapi: 3.0.3
+info:
+  title: Manuali API
+  description: API para gerenciamento de usuários, artesãos, produtos, pedidos e administradores
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+    description: Servidor de desenvolvimento
+paths:
+  /health:
+    get:
+      summary: Health check
+      responses:
+        '200':
+          description: Servidor saudável
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  timestamp:
+                    type: string
+                    format: date-time
+
+  /api/usuarios:
+    get:
+      summary: Lista todos os usuários
+      responses:
+        '200':
+          description: Lista de usuários
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GetUsuarioDto'
+    post:
+      summary: Cria um novo usuário
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUsuarioDto'
+      responses:
+        '201':
+          description: Usuário criado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetUsuarioDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  /api/usuarios/search:
+    get:
+      summary: Busca usuário por username
+      parameters:
+        - name: username
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Usuário encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetUsuarioDto'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/usuarios/{id}:
+    get:
+      summary: Busca usuário por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Usuário encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetUsuarioDto'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      summary: Atualiza um usuário
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUsuarioDto'
+      responses:
+        '200':
+          description: Usuário atualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetUsuarioDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+    delete:
+      summary: Deleta um usuário
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Usuário deletado
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/products:
+    get:
+      summary: Lista todos os produtos
+      responses:
+        '200':
+          description: Lista de produtos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GetProductDto'
+    post:
+      summary: Cria um novo produto
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProductDto'
+      responses:
+        '201':
+          description: Produto criado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetProductDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /api/products/search:
+    get:
+      summary: Busca produtos por nome
+      parameters:
+        - name: nome
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de produtos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GetProductDto'
+
+  /api/products/{id}:
+    get:
+      summary: Busca produto por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Produto encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetProductDto'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      summary: Atualiza um produto
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProductDto'
+      responses:
+        '200':
+          description: Produto atualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetProductDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      summary: Deleta um produto
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Produto deletado
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/pedidos:
+    get:
+      summary: Lista todos os pedidos
+      responses:
+        '200':
+          description: Lista de pedidos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GetPedidoDto'
+    post:
+      summary: Cria um novo pedido
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePedidoDto'
+      responses:
+        '201':
+          description: Pedido criado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetPedidoDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  /api/pedidos/{id}:
+    get:
+      summary: Busca pedido por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Pedido encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetPedidoDto'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      summary: Atualiza um pedido
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePedidoDto'
+      responses:
+        '200':
+          description: Pedido atualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetPedidoDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      summary: Deleta um pedido
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Pedido deletado
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/artesaos:
+    get:
+      summary: Lista todos os artesãos
+      responses:
+        '200':
+          description: Lista de artesãos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GetArtesaoDto'
+    post:
+      summary: Cria um novo artesão
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateArtesaoDto'
+      responses:
+        '201':
+          description: Artesão criado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetArtesaoDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  /api/artesaos/search:
+    get:
+      summary: Busca artesão por username
+      parameters:
+        - name: username
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Artesão encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetArtesaoDto'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/artesaos/{id}:
+    get:
+      summary: Busca artesão por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Artesão encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetArtesaoDto'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      summary: Atualiza um artesão
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateArtesaoDto'
+      responses:
+        '200':
+          description: Artesão atualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetArtesaoDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+    delete:
+      summary: Deleta um artesão
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Artesão deletado
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/adms:
+    get:
+      summary: Lista todos os administradores
+      responses:
+        '200':
+          description: Lista de administradores
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GetAdmDto'
+    post:
+      summary: Cria um novo administrador
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAdmDto'
+      responses:
+        '201':
+          description: Administrador criado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAdmDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  /api/adms/search:
+    get:
+      summary: Busca administrador por username
+      parameters:
+        - name: username
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Administrador encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAdmDto'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/adms/{id}:
+    get:
+      summary: Busca administrador por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Administrador encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAdmDto'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      summary: Atualiza um administrador
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAdmDto'
+      responses:
+        '200':
+          description: Administrador atualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAdmDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+    delete:
+      summary: Deleta um administrador
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Administrador deletado
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+components:
+  schemas:
+    CreateUsuarioDto:
+      type: object
+      required:
+        - username
+        - password
+        - email
+        - cep
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+        email:
+          type: string
+        cep:
+          type: string
+
+    UpdateUsuarioDto:
+      type: object
+      required:
+        - id
+        - username
+        - email
+        - cep
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        email:
+          type: string
+        cep:
+          type: string
+        password:
+          type: string
+          nullable: true
+
+    GetUsuarioDto:
+      type: object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        email:
+          type: string
+        cep:
+          type: string
+
+    CreateProductDto:
+      type: object
+      required:
+        - nome
+        - preco
+        - estoque
+      properties:
+        nome:
+          type: string
+        descricao:
+          type: string
+        preco:
+          type: number
+          format: decimal
+        estoque:
+          type: integer
+        ativo:
+          type: boolean
+          default: true
+
+    UpdateProductDto:
+      type: object
+      required:
+        - id
+        - nome
+        - preco
+        - estoque
+        - ativo
+      properties:
+        id:
+          type: integer
+        nome:
+          type: string
+        descricao:
+          type: string
+        preco:
+          type: number
+          format: decimal
+        estoque:
+          type: integer
+        ativo:
+          type: boolean
+
+    GetProductDto:
+      type: object
+      properties:
+        id:
+          type: integer
+        nome:
+          type: string
+        preco:
+          type: number
+          format: decimal
+        estoque:
+          type: integer
+        ativo:
+          type: boolean
+
+    CreateItemPedidoDto:
+      type: object
+      required:
+        - idProduto
+        - quantidade
+      properties:
+        idProduto:
+          type: integer
+        quantidade:
+          type: integer
+
+    CreatePedidoDto:
+      type: object
+      required:
+        - itens
+        - cep
+      properties:
+        itens:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreateItemPedidoDto'
+        cep:
+          type: string
+
+    UpdatePedidoDto:
+      type: object
+      required:
+        - cep
+        - concluido
+      properties:
+        cep:
+          type: string
+        concluido:
+          type: boolean
+
+    GetItemPedidoDto:
+      type: object
+      properties:
+        idProduto:
+          type: integer
+        quantidade:
+          type: integer
+        precoUnitario:
+          type: number
+          format: decimal
+        subtotal:
+          type: number
+          format: decimal
+
+    GetPedidoDto:
+      type: object
+      properties:
+        idPedido:
+          type: integer
+        data:
+          type: string
+          format: date-time
+        cep:
+          type: string
+        concluido:
+          type: boolean
+        total:
+          type: number
+          format: decimal
+        itens:
+          type: array
+          items:
+            $ref: '#/components/schemas/GetItemPedidoDto'
+
+    CreateArtesaoDto:
+      type: object
+      required:
+        - username
+        - password
+        - email
+        - cep
+        - cpf
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+        email:
+          type: string
+        cep:
+          type: string
+        cpf:
+          type: string
+
+    UpdateArtesaoDto:
+      type: object
+      required:
+        - id
+        - username
+        - email
+        - cep
+        - cpf
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        email:
+          type: string
+        cep:
+          type: string
+        cpf:
+          type: string
+        password:
+          type: string
+          nullable: true
+
+    GetArtesaoDto:
+      type: object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        email:
+          type: string
+        cep:
+          type: string
+
+    CreateAdmDto:
+      type: object
+      required:
+        - username
+        - password
+        - email
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+        email:
+          type: string
+
+    UpdateAdmDto:
+      type: object
+      required:
+        - idAdm
+        - username
+        - email
+      properties:
+        idAdm:
+          type: integer
+        username:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+          nullable: true
+
+    GetAdmDto:
+      type: object
+      properties:
+        idAdm:
+          type: integer
+        username:
+          type: string
+        email:
+          type: string
+
+    ErrorResponse:
+      type: object
+      properties:
+        erro:
+          type: string
+
+  responses:
+    NotFound:
+      description: Recurso não encontrado
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    BadRequest:
+      description: Requisição inválida
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Conflict:
+      description: Conflito (recurso duplicado ou estoque insuficiente)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
