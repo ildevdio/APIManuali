@@ -1,3 +1,6 @@
 node_modules/
 server.log
 *.bak
+
+/src/generated/prisma
+/.env
