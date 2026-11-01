@@ -29,3 +29,12 @@ export class InternalServerError extends Error {
     this.statusCode = 500;
   }
 }
+
+export class ValidationError extends Error {
+  constructor(errors) {
+    super('Erro de validação.');
+    this.name = 'ValidationError';
+    this.statusCode = 400;
+    this.errors = errors;
+  }
+}

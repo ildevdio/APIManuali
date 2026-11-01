@@ -1,6 +1,19 @@
-import { NotFoundError, ConflictError, BadRequestError } from '../utils/errors.js';
+import {
+  NotFoundError,
+  ConflictError,
+  BadRequestError,
+  ValidationError,
+  InternalServerError
+} from '../utils/errors.js';
 
 export function errorHandler(err, req, res, next) {
+  if (err instanceof ValidationError) {
+    return res.status(400).json({
+      erro: 'Erro de validação.',
+      details: err.errors
+    });
+  }
+
   if (err instanceof NotFoundError) {
     return res.status(err.statusCode).json({ erro: err.message });
   }
@@ -10,6 +23,10 @@ export function errorHandler(err, req, res, next) {
   }
 
   if (err instanceof BadRequestError) {
+    return res.status(err.statusCode).json({ erro: err.message });
+  }
+
+  if (err instanceof InternalServerError) {
     return res.status(err.statusCode).json({ erro: err.message });
   }
 
