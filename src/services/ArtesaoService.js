@@ -58,7 +58,10 @@ class ArtesaoService {
         senhaHash,
         dto.email.trim(),
         dto.cep,
-        cpf
+        cpf,
+        dto.bio,
+        dto.experiencia,
+        dto.telefone
       );
 
       this.#artesaos.set(artesao.id, artesao);
@@ -93,6 +96,15 @@ class ArtesaoService {
     return artesao.toGetDto();
   }
 
+  async autenticar(username, senha) {
+    const artesao = Array.from(this.#artesaos.values()).find(
+      a => a.username.toLowerCase() === username.toLowerCase()
+    );
+    if (!artesao) return null;
+    const valida = await bcrypt.compare(senha, artesao.password);
+    return valida ? artesao.toGetDto() : null;
+  }
+
   async atualizar(id, dto) {
     const artesao = this.#artesaos.get(id);
     if (!artesao) {
@@ -120,6 +132,9 @@ class ArtesaoService {
       artesao.email = dto.email.trim();
       artesao.cep = dto.cep;
       artesao.cpf = cpf;
+      artesao.bio = dto.bio;
+      artesao.experiencia = dto.experiencia;
+      artesao.telefone = dto.telefone;
 
       if (novoHash) {
         artesao.password = novoHash;

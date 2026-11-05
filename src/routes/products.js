@@ -6,6 +6,12 @@ import { validate } from '../middleware/validate.js';
 const router = express.Router();
 
 const schemas = {
+  listar: {
+    query: {
+      categoria: { type: 'string', required: false, max: 100 },
+      ativo: { type: 'boolean', required: false }
+    }
+  },
   buscarPorNome: {
     query: {
       nome: { type: 'string', required: false, max: 100 }
@@ -22,7 +28,11 @@ const schemas = {
       descricao: { type: 'string', required: false, max: 500 },
       preco: { type: 'positiveNumber', required: true },
       estoque: { type: 'nonNegativeInteger', required: true },
-      ativo: { type: 'boolean', required: false }
+      ativo: { type: 'boolean', required: false },
+      categoria: { type: 'string', required: false, max: 100 },
+      fotos: { type: 'array', required: false },
+      historia: { type: 'string', required: false, max: 2000 },
+      artesaoId: { type: 'positiveInteger', required: false }
     }
   },
   atualizar: {
@@ -34,7 +44,11 @@ const schemas = {
       descricao: { type: 'string', required: false, max: 500 },
       preco: { type: 'positiveNumber', required: true },
       estoque: { type: 'nonNegativeInteger', required: true },
-      ativo: { type: 'boolean', required: true }
+      ativo: { type: 'boolean', required: true },
+      categoria: { type: 'string', required: false, max: 100 },
+      fotos: { type: 'array', required: false },
+      historia: { type: 'string', required: false, max: 2000 },
+      artesaoId: { type: 'positiveInteger', required: false }
     }
   },
   deletar: {
@@ -46,7 +60,18 @@ const schemas = {
 
 // GET: /api/products
 router.get('/', asyncHandler(async (req, res) => {
-  const produtos = productService.listar();
+  const { categoria, ativo } = req.query;
+  let produtos = productService.listar();
+
+  if (categoria) {
+    produtos = produtos.filter(p => p.categoria && p.categoria.toLowerCase() === categoria.toLowerCase());
+  }
+
+  if (ativo !== undefined) {
+    const ativoBool = ativo === 'true';
+    produtos = produtos.filter(p => p.ativo === ativoBool);
+  }
+
   res.json(produtos);
 }));
 
@@ -67,7 +92,17 @@ router.get('/:id', validate(schemas.buscarPorId), asyncHandler(async (req, res) 
 // POST: /api/products
 router.post('/', validate(schemas.criar), asyncHandler(async (req, res) => {
   const dto = req.body;
-  const produto = productService.criar(dto);
+  const produto = productService.criar({
+    nome: dto.nome,
+    descricao: dto.descricao,
+    preco: dto.preco,
+    estoque: dto.estoque,
+    ativo: dto.ativo,
+    categoria: dto.categoria,
+    fotos: dto.fotos,
+    historia: dto.historia,
+    artesaoId: dto.artesaoId
+  });
   res.status(201).location(`/api/products/${produto.id}`).json(produto);
 }));
 
@@ -75,7 +110,17 @@ router.post('/', validate(schemas.criar), asyncHandler(async (req, res) => {
 router.put('/:id', validate(schemas.atualizar), asyncHandler(async (req, res) => {
   const id = parseInt(req.params.id, 10);
   const dto = req.body;
-  const produto = await productService.atualizar(id, dto);
+  const produto = await productService.atualizar(id, {
+    nome: dto.nome,
+    descricao: dto.descricao,
+    preco: dto.preco,
+    estoque: dto.estoque,
+    ativo: dto.ativo,
+    categoria: dto.categoria,
+    fotos: dto.fotos,
+    historia: dto.historia,
+    artesaoId: dto.artesaoId
+  });
   res.json(produto);
 }));
 
