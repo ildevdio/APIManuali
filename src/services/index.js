@@ -3,3 +3,7 @@ export { default as productService } from './ProductService.js';
 export { default as pedidoService } from './PedidoService.js';
 export { default as artesaoService } from './ArtesaoService.js';
 export { default as admService } from './AdmService.js';
+export { default as authService } from './AuthService.js';
+export { default as carrinhoService } from './CarrinhoService.js';
+export { default as avaliacaoService } from './AvaliacaoService.js';
+export { default as recomendacaoService } from './RecomendacaoService.js';

@@ -76,6 +76,15 @@ class AdmService {
     return adm.toGetDto();
   }
 
+  async autenticar(username, senha) {
+    const adm = Array.from(this.#adms.values()).find(
+      a => a.username.toLowerCase() === username.toLowerCase()
+    );
+    if (!adm) return null;
+    const valida = await bcrypt.compare(senha, adm.password);
+    return valida ? adm.toGetDto() : null;
+  }
+
   async atualizar(id, dto) {
     const adm = this.#adms.get(id);
     if (!adm) {

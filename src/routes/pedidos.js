@@ -6,6 +6,12 @@ import { validate } from '../middleware/validate.js';
 const router = express.Router();
 
 const schemas = {
+  listar: {
+    query: {
+      usuarioId: { type: 'positiveInteger', required: false },
+      status: { type: 'string', required: false }
+    }
+  },
   buscarPorId: {
     params: {
       id: { type: 'positiveInteger', required: true }
@@ -14,7 +20,17 @@ const schemas = {
   criar: {
     body: {
       itens: { type: 'array', required: true },
-      cep: { type: 'cep', required: true }
+      cep: { type: 'cep', required: true },
+      endereco: { type: 'string', required: false },
+      usuarioId: { type: 'positiveInteger', required: false }
+    }
+  },
+  atualizarStatus: {
+    params: {
+      id: { type: 'positiveInteger', required: true }
+    },
+    body: {
+      status: { type: 'string', required: true }
     }
   },
   atualizar: {
@@ -33,9 +49,20 @@ const schemas = {
   }
 };
 
-// GET: /api/pedidos
-router.get('/', asyncHandler(async (req, res) => {
-  const pedidos = pedidoService.listar();
+// GET: /api/pedidos (com filtros opcionais por usuarioId e status)
+router.get('/', validate(schemas.listar), asyncHandler(async (req, res) => {
+  const { usuarioId, status } = req.query;
+  let pedidos = pedidoService.listar();
+
+  if (usuarioId) {
+    const uid = parseInt(usuarioId, 10);
+    pedidos = pedidos.filter(p => p.usuarioId === uid);
+  }
+
+  if (status) {
+    pedidos = pedidos.filter(p => p.status === status);
+  }
+
   res.json(pedidos);
 }));
 
@@ -57,8 +84,21 @@ router.post('/', validate(schemas.criar), asyncHandler(async (req, res) => {
       return res.status(400).json({ erro: 'Cada item deve ter idProduto e quantidade (> 0).' });
     }
   }
-  const pedido = await pedidoService.criar(dto);
+  const pedido = await pedidoService.criar({
+    itens: dto.itens,
+    cep: dto.cep,
+    endereco: dto.endereco,
+    usuarioId: dto.usuarioId
+  });
   res.status(201).location(`/api/pedidos/${pedido.idPedido}`).json(pedido);
+}));
+
+// PATCH: /api/pedidos/5/status - atualizar status do pedido (artesão)
+router.patch('/:id/status', validate(schemas.atualizarStatus), asyncHandler(async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  const { status } = req.body;
+  const pedido = await pedidoService.atualizarStatus(id, status);
+  res.json(pedido);
 }));
 
 // PUT: /api/pedidos/5

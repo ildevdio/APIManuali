@@ -550,6 +550,444 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
+  /api/auth/login:
+    post:
+      summary: Login de usuário (usuario, artesão ou admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+                tipo:
+                  type: string
+                  enum: [usuario, artesao, adm]
+                  default: usuario
+      responses:
+        '200':
+          description: Login realizado com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                  usuario:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      username:
+                        type: string
+                      email:
+                        type: string
+                      papel:
+                        type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /api/auth/logout:
+    post:
+      summary: Logout do usuário
+      responses:
+        '200':
+          description: Logout realizado
+
+  /api/carrinho:
+    get:
+      summary: Obtém ou cria carrinho do usuário
+      parameters:
+        - name: usuarioId
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Carrinho do usuário
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCarrinhoDto'
+    delete:
+      summary: Limpa o carrinho do usuário
+      parameters:
+        - name: usuarioId
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Carrinho limpo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCarrinhoDto'
+
+  /api/carrinho/itens:
+    get:
+      summary: Lista itens do carrinho com detalhes dos produtos
+      parameters:
+        - name: usuarioId
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Itens do carrinho
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  itens:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/GetCarrinhoItemDto'
+                  total:
+                    type: number
+    post:
+      summary: Adiciona item ao carrinho
+      parameters:
+        - name: usuarioId
+          in: query
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdicionarCarrinhoItemDto'
+      responses:
+        '200':
+          description: Item adicionado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCarrinhoDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /api/carrinho/itens/{idProduto}:
+    put:
+      summary: Atualiza quantidade de item no carrinho
+      parameters:
+        - name: usuarioId
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: idProduto
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AtualizarCarrinhoItemDto'
+      responses:
+        '200':
+          description: Item atualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCarrinhoDto'
+    delete:
+      summary: Remove item do carrinho
+      parameters:
+        - name: usuarioId
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: idProduto
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Item removido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCarrinhoDto'
+
+  /api/avaliacoes:
+    post:
+      summary: Cria uma avaliação de produto
+      parameters:
+        - name: usuarioId
+          in: query
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAvaliacaoDto'
+      responses:
+        '201':
+          description: Avaliação criada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAvaliacaoDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /api/avaliacoes/produto/{id}:
+    get:
+      summary: Lista avaliações de um produto
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Lista de avaliações
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GetAvaliacaoDto'
+
+  /api/avaliacoes/media/{id}:
+    get:
+      summary: Retorna média de avaliações de um produto
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Média de avaliações
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  media:
+                    type: number
+                  total:
+                    type: integer
+
+  /api/avaliacoes/usuario:
+    get:
+      summary: Lista avaliações de um usuário
+      parameters:
+        - name: usuarioId
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Lista de avaliações
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GetAvaliacaoDto'
+
+  /api/avaliacoes/{id}:
+    delete:
+      summary: Deleta uma avaliação
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Avaliação deletada
+
+  /api/recomendacoes/relacionados/{id}:
+    get:
+      summary: Produtos relacionados por categoria
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: limite
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Produtos relacionados
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GetProductDto'
+
+  /api/recomendacoes/mais-avaliados:
+    get:
+      summary: Produtos mais avaliados
+      parameters:
+        - name: limite
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Produtos mais avaliados
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GetProductDto'
+
+  /api/recomendacoes/destaque:
+    get:
+      summary: Produtos em destaque
+      parameters:
+        - name: limite
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Produtos em destaque
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GetProductDto'
+
+  /api/admin/metricas/vendas:
+    get:
+      summary: Indicadores de vendas
+      responses:
+        '200':
+          description: Métricas de vendas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalPedidos:
+                    type: integer
+                  totalVendas:
+                    type: number
+                  pedidosEntregues:
+                    type: integer
+                  pedidosPendentes:
+                    type: integer
+                  ticketMedio:
+                    type: number
+
+  /api/admin/metricas/produtos:
+    get:
+      summary: Indicadores de produtos
+      responses:
+        '200':
+          description: Métricas de produtos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalProdutos:
+                    type: integer
+                  produtosAtivos:
+                    type: integer
+                  produtosInativos:
+                    type: integer
+                  estoqueTotal:
+                    type: integer
+
+  /api/admin/metricas/artesaos:
+    get:
+      summary: Indicadores de artesãos
+      responses:
+        '200':
+          description: Métricas de artesãos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalArtesãos:
+                    type: integer
+                  artesaos:
+                    type: array
+
+  /api/admin/metricas/consumidores:
+    get:
+      summary: Indicadores de consumidores
+      responses:
+        '200':
+          description: Métricas de consumidores
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalUsuarios:
+                    type: integer
+                  totalCompradores:
+                    type: integer
+
+  /api/admin/metricas/geral:
+    get:
+      summary: Métricas gerais da plataforma
+      responses:
+        '200':
+          description: Métricas gerais
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalVendas:
+                    type: number
+                  totalPedidos:
+                    type: integer
+                  totalProdutos:
+                    type: integer
+                  totalArtesãos:
+                    type: integer
+                  totalUsuarios:
+                    type: integer
+                  ticketMedio:
+                    type: number
+                  produtosAtivos:
+                    type: integer
+                  pedidosPendentes:
+                    type: integer
+
 components:
   schemas:
     CreateUsuarioDto:
@@ -823,6 +1261,88 @@ components:
           type: string
         email:
           type: string
+
+    CreateCarrinhoItemDto:
+      type: object
+      required:
+        - idProduto
+        - quantidade
+      properties:
+        idProduto:
+          type: integer
+        quantidade:
+          type: integer
+
+    AtualizarCarrinhoItemDto:
+      type: object
+      required:
+        - quantidade
+      properties:
+        quantidade:
+          type: integer
+
+    GetCarrinhoItemDto:
+      type: object
+      properties:
+        idProduto:
+          type: integer
+        quantidade:
+          type: integer
+        nome:
+          type: string
+        preco:
+          type: number
+        imagem:
+          type: string
+        subtotal:
+          type: number
+
+    GetCarrinhoDto:
+      type: object
+      properties:
+        id:
+          type: integer
+        usuarioId:
+          type: integer
+        itens:
+          type: array
+          items:
+            $ref: '#/components/schemas/GetCarrinhoItemDto'
+        atualizadoEm:
+          type: string
+          format: date-time
+
+    CreateAvaliacaoDto:
+      type: object
+      required:
+        - produtoId
+        - nota
+      properties:
+        produtoId:
+          type: integer
+        nota:
+          type: integer
+          minimum: 1
+          maximum: 5
+        comentario:
+          type: string
+
+    GetAvaliacaoDto:
+      type: object
+      properties:
+        id:
+          type: integer
+        produtoId:
+          type: integer
+        usuarioId:
+          type: integer
+        nota:
+          type: integer
+        comentario:
+          type: string
+        data:
+          type: string
+          format: date-time
 
     ErrorResponse:
       type: object

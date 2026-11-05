@@ -83,6 +83,15 @@ class UsuarioService {
     return usuario.toGetDto();
   }
 
+  async autenticar(username, senha) {
+    const usuario = Array.from(this.#usuarios.values()).find(
+      u => u.username.toLowerCase() === username.toLowerCase()
+    );
+    if (!usuario) return null;
+    const valida = await bcrypt.compare(senha, usuario.password);
+    return valida ? usuario.toGetDto() : null;
+  }
+
   async atualizar(id, dto) {
     const usuario = this.#usuarios.get(id);
     if (!usuario) {
