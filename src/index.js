@@ -6,7 +6,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
-import { usuariosRouter, productsRouter, pedidosRouter, artesaosRouter, admsRouter } from './routes/index.js';
+import { usuariosRouter, productsRouter, pedidosRouter, artesaosRouter, admsRouter, authRouter, carrinhoRouter, avaliacoesRouter, recomendacoesRouter, adminRouter } from './routes/index.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -36,6 +36,11 @@ app.use('/api/products', productsRouter);
 app.use('/api/pedidos', pedidosRouter);
 app.use('/api/artesaos', artesaosRouter);
 app.use('/api/adms', admsRouter);
+app.use('/api/auth', authRouter);
+app.use('/api/carrinho', carrinhoRouter);
+app.use('/api/avaliacoes', avaliacoesRouter);
+app.use('/api/recomendacoes', recomendacoesRouter);
+app.use('/api/admin', adminRouter);
 
 // Health check
 app.get('/health', (req, res) => {

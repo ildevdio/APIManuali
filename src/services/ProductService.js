@@ -11,7 +11,11 @@ class ProductService {
       dto.descricao || '',
       dto.preco,
       dto.estoque || 0,
-      dto.ativo !== undefined ? dto.ativo : true
+      dto.ativo !== undefined ? dto.ativo : true,
+      dto.categoria,
+      dto.fotos,
+      dto.historia,
+      dto.artesaoId
     );
 
     this.#products.set(product.id, product);
@@ -54,6 +58,10 @@ class ProductService {
         product.estoque = dto.estoque;
         product.ativo = dto.ativo;
         product.preco = dto.preco;
+        product.categoria = dto.categoria;
+        product.fotos = dto.fotos;
+        product.historia = dto.historia;
+        product.artesaoId = dto.artesaoId;
 
         return product.toGetDto();
       }).then(resolve).catch(reject);

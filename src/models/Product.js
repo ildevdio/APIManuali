@@ -7,13 +7,21 @@ class Product {
   #preco;
   #estoque;
   #ativo;
+  #categoria;
+  #fotos;
+  #historia;
+  #artesaoId;
 
-  constructor(nome, descricao, preco, estoque, ativo) {
+  constructor(nome, descricao, preco, estoque, ativo, categoria, fotos, historia, artesaoId) {
     this.#id = ++productIdCounter;
     this.nome = nome;
     this.descricao = descricao;
     this.estoque = estoque;
     this.ativo = ativo;
+    this.categoria = categoria;
+    this.fotos = fotos;
+    this.historia = historia;
+    this.artesaoId = artesaoId;
     this.preco = preco; // por último: preço negativo desativa o produto
   }
 
@@ -73,13 +81,50 @@ class Product {
     this.#ativo = value;
   }
 
+  get categoria() {
+    return this.#categoria;
+  }
+
+  set categoria(value) {
+    this.#categoria = value && value.trim() ? value.trim() : '';
+  }
+
+  get fotos() {
+    return this.#fotos;
+  }
+
+  set fotos(value) {
+    this.#fotos = Array.isArray(value) ? [...value] : [];
+  }
+
+  get historia() {
+    return this.#historia;
+  }
+
+  set historia(value) {
+    this.#historia = value && value.trim() ? value.trim() : '';
+  }
+
+  get artesaoId() {
+    return this.#artesaoId;
+  }
+
+  set artesaoId(value) {
+    this.#artesaoId = value;
+  }
+
   toGetDto() {
     return {
       id: this.#id,
       nome: this.#nome,
+      descricao: this.#descricao,
       preco: this.#preco,
       estoque: this.#estoque,
-      ativo: this.#ativo
+      ativo: this.#ativo,
+      categoria: this.#categoria,
+      fotos: this.#fotos,
+      historia: this.#historia,
+      artesaoId: this.#artesaoId
     };
   }
 }

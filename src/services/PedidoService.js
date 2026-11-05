@@ -36,7 +36,14 @@ class PedidoService {
 
     try {
       const itens = reservados.map(r => new ItemPedido(r.idProduto, r.quantidade, r.precoUnitario));
-      const pedido = new Pedido(itens, new Date(), dto.cep);
+      const pedido = new Pedido(
+        itens,
+        new Date(),
+        dto.cep,
+        dto.usuarioId,
+        dto.endereco,
+        'pendente'
+      );
       this.#pedidos.set(pedido.idPedido, pedido);
       return this.#toGetDto(pedido);
     } catch (error) {
@@ -73,6 +80,22 @@ class PedidoService {
         return this.#toGetDto(pedido);
       }).then(resolve).catch(reject);
     });
+  }
+
+  async atualizarStatus(id, status) {
+    await this.#pedidoLock;
+    this.#pedidoLock = (async () => {
+      const pedido = this.#pedidos.get(id);
+      if (!pedido) {
+        throw new NotFoundError(`Pedido com Id ${id} não foi encontrado...`);
+      }
+
+      pedido.status = status;
+
+      return this.#toGetDto(pedido);
+    })();
+
+    return this.#pedidoLock;
   }
 
   deletar(id) {

@@ -2,14 +2,19 @@ import ItemPedido from './ItemPedido.js';
 
 let pedidoIdCounter = 0;
 
+const STATUS_PEDIDO = ['pendente', 'aprovado', 'preparado', 'enviado', 'entregue', 'cancelado'];
+
 class Pedido {
   #idPedido;
   #data;
   #cepPedido;
+  #endereco;
+  #usuarioId;
+  #status;
   #concluido;
   #itens;
 
-  constructor(itens, data, cepPedido) {
+  constructor(itens, data, cepPedido, usuarioId, endereco, status) {
     const lista = Array.isArray(itens) ? [...itens] : [...itens];
 
     if (lista.length === 0) {
@@ -20,7 +25,9 @@ class Pedido {
     this.#itens = lista;
     this.data = data;
     this.cepPedido = cepPedido;
-    this.concluido = false;
+    this.endereco = endereco;
+    this.usuarioId = usuarioId;
+    this.status = status || 'pendente';
   }
 
   get idPedido() {
@@ -50,6 +57,34 @@ class Pedido {
     this.#cepPedido = value;
   }
 
+  get endereco() {
+    return this.#endereco;
+  }
+
+  set endereco(value) {
+    this.#endereco = value && value.trim() ? value.trim() : '';
+  }
+
+  get usuarioId() {
+    return this.#usuarioId;
+  }
+
+  set usuarioId(value) {
+    this.#usuarioId = value;
+  }
+
+  get status() {
+    return this.#status;
+  }
+
+  set status(value) {
+    if (value && !STATUS_PEDIDO.includes(value)) {
+      throw new Error(`Status inválido. Valores permitidos: ${STATUS_PEDIDO.join(', ')}`);
+    }
+    this.#status = value || 'pendente';
+    this.#concluido = this.#status === 'entregue';
+  }
+
   get concluido() {
     return this.#concluido;
   }
@@ -71,6 +106,9 @@ class Pedido {
       idPedido: this.#idPedido,
       data: this.#data,
       cep: this.#cepPedido,
+      endereco: this.#endereco,
+      usuarioId: this.#usuarioId,
+      status: this.#status,
       concluido: this.#concluido,
       total: this.total,
       itens: this.#itens.map(item => item.toGetDto())
