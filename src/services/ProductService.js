@@ -7,17 +7,17 @@ class ProductService {
   #filaOperacoes = createSerialQueue();
 
   criar(dto) {
-    const product = new Product(
-      dto.nome,
-      dto.descricao || '',
-      dto.preco,
-      dto.estoque || 0,
-      dto.ativo !== undefined ? dto.ativo : true,
-      dto.categoria,
-      dto.fotos,
-      dto.historia,
-      dto.artesaoId
-    );
+    const product = new Product({
+      nome: dto.nome,
+      descricao: dto.descricao || '',
+      preco: dto.preco,
+      estoque: dto.estoque || 0,
+      ativo: dto.ativo !== undefined ? dto.ativo : true,
+      categoria: dto.categoria,
+      fotos: dto.fotos,
+      historia: dto.historia,
+      artesaoId: dto.artesaoId
+    });
 
     this.#products.set(product.id, product);
 
