@@ -1,10 +1,11 @@
 import bcrypt from 'bcryptjs';
 import User from '../models/User.js';
+import { createSerialQueue } from '../utils/serialQueue.js';
 import { NotFoundError, ConflictError, BadRequestError } from '../utils/errors.js';
 
 class UsuarioService {
   #usuarios = new Map();
-  #cadastroLock = Promise.resolve();
+  #filaOperacoes = createSerialQueue();
 
   async #hashPassword(password) {
     return bcrypt.hash(password, 10);
@@ -37,10 +38,7 @@ class UsuarioService {
 
     const senhaHash = await this.#hashPassword(dto.password);
 
-    // Aguarda o lock anterior e executa a operação
-    await this.#cadastroLock;
-
-    const operacao = (async () => {
+    return this.#filaOperacoes.enqueue(async () => {
       this.#garantirUnicidade(dto.username.trim(), dto.email.trim());
 
       const usuario = new User(
@@ -53,12 +51,7 @@ class UsuarioService {
       this.#usuarios.set(usuario.id, usuario);
 
       return usuario.toGetDto();
-    })();
-
-    // A fila precisa continuar utilizável mesmo quando a operação falha.
-    this.#cadastroLock = operacao.catch(() => {});
-
-    return operacao;
+    });
   }
 
   listar() {
@@ -109,9 +102,7 @@ class UsuarioService {
       novoHash = await this.#hashPassword(dto.password);
     }
 
-    await this.#cadastroLock;
-
-    const operacao = (async () => {
+    return this.#filaOperacoes.enqueue(async () => {
       this.#garantirUnicidade(dto.username.trim(), dto.email.trim(), id);
 
       usuario.username = dto.username.trim();
@@ -123,17 +114,15 @@ class UsuarioService {
       }
 
       return usuario.toGetDto();
-    })();
-
-    this.#cadastroLock = operacao.catch(() => {});
-
-    return operacao;
+    });
   }
 
   deletar(id) {
-    if (!this.#usuarios.delete(id)) {
-      throw new NotFoundError(`Usuário de Id ${id} não existe ou não foi localizado...`);
-    }
+    return this.#filaOperacoes.enqueue(() => {
+      if (!this.#usuarios.delete(id)) {
+        throw new NotFoundError(`Usuário de Id ${id} não existe ou não foi localizado...`);
+      }
+    });
   }
 }
 

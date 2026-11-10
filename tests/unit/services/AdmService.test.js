@@ -112,7 +112,7 @@ describe('AdmService', () => {
     const dados = dadosAdm();
     const criado = await admService.criar(dados);
 
-    expect(() => admService.deletar(criado.idAdm)).not.toThrow();
-    expect(() => admService.deletar(criado.idAdm)).toThrow(NotFoundError);
+    await expect(admService.deletar(criado.idAdm)).resolves.toBeUndefined();
+    await expect(admService.deletar(criado.idAdm)).rejects.toBeInstanceOf(NotFoundError);
   });
 });

@@ -1,9 +1,10 @@
 import Product from '../models/Product.js';
+import { createSerialQueue } from '../utils/serialQueue.js';
 import { NotFoundError, BadRequestError, ConflictError } from '../utils/errors.js';
 
 class ProductService {
   #products = new Map();
-  #estoqueLock = Promise.resolve();
+  #filaOperacoes = createSerialQueue();
 
   criar(dto) {
     const product = new Product(
@@ -46,35 +47,31 @@ class ProductService {
   }
 
   atualizar(id, dto) {
-    return new Promise((resolve, reject) => {
-      this.#estoqueLock = this.#estoqueLock.then(() => {
-        const product = this.#products.get(id);
-        if (!product) {
-          throw new NotFoundError(`Produto com Id ${id} não foi encontrado...`);
-        }
+    return this.#filaOperacoes.enqueue(() => {
+      const product = this.#products.get(id);
+      if (!product) {
+        throw new NotFoundError(`Produto com Id ${id} não foi encontrado...`);
+      }
 
-        product.nome = dto.nome;
-        product.descricao = dto.descricao;
-        product.estoque = dto.estoque;
-        product.ativo = dto.ativo;
-        product.preco = dto.preco;
-        product.categoria = dto.categoria;
-        product.fotos = dto.fotos;
-        product.historia = dto.historia;
-        product.artesaoId = dto.artesaoId;
+      product.nome = dto.nome;
+      product.descricao = dto.descricao;
+      product.estoque = dto.estoque;
+      product.ativo = dto.ativo;
+      product.preco = dto.preco;
+      product.categoria = dto.categoria;
+      product.fotos = dto.fotos;
+      product.historia = dto.historia;
+      product.artesaoId = dto.artesaoId;
 
-        return product.toGetDto();
-      }).then(resolve).catch(reject);
+      return product.toGetDto();
     });
   }
 
   deletar(id) {
-    return new Promise((resolve, reject) => {
-      this.#estoqueLock = this.#estoqueLock.then(() => {
-        if (!this.#products.delete(id)) {
-          throw new NotFoundError(`Produto com Id ${id} não foi encontrado...`);
-        }
-      }).then(resolve).catch(reject);
+    return this.#filaOperacoes.enqueue(() => {
+      if (!this.#products.delete(id)) {
+        throw new NotFoundError(`Produto com Id ${id} não foi encontrado...`);
+      }
     });
   }
 
@@ -95,52 +92,48 @@ class ProductService {
       throw new BadRequestError('Quantidade deve ser maior que zero.');
     }
 
-    return new Promise((resolve, reject) => {
-      this.#estoqueLock = this.#estoqueLock.then(() => {
-        const alvos = [];
+    return this.#filaOperacoes.enqueue(() => {
+      const alvos = [];
 
-        for (const { idProduto, quantidade } of pedidos) {
-          const produto = this.#products.get(idProduto);
-          if (!produto) {
-            throw new NotFoundError(`Produto com Id ${idProduto} não foi encontrado...`);
-          }
-
-          if (!produto.ativo) {
-            throw new BadRequestError(`O produto '${produto.nome}' está inativo.`);
-          }
-
-          if (produto.estoque < quantidade) {
-            throw new ConflictError(`Estoque insuficiente para '${produto.nome}'. Disponível: ${produto.estoque}.`);
-          }
-
-          alvos.push({ produto, quantidade });
+      for (const { idProduto, quantidade } of pedidos) {
+        const produto = this.#products.get(idProduto);
+        if (!produto) {
+          throw new NotFoundError(`Produto com Id ${idProduto} não foi encontrado...`);
         }
 
-        const reservados = [];
-        for (const { produto, quantidade } of alvos) {
-          produto.estoque -= quantidade;
-          reservados.push({
-            idProduto: produto.id,
-            quantidade,
-            precoUnitario: produto.preco
-          });
+        if (!produto.ativo) {
+          throw new BadRequestError(`O produto '${produto.nome}' está inativo.`);
         }
 
-        return reservados;
-      }).then(resolve).catch(reject);
+        if (produto.estoque < quantidade) {
+          throw new ConflictError(`Estoque insuficiente para '${produto.nome}'. Disponível: ${produto.estoque}.`);
+        }
+
+        alvos.push({ produto, quantidade });
+      }
+
+      const reservados = [];
+      for (const { produto, quantidade } of alvos) {
+        produto.estoque -= quantidade;
+        reservados.push({
+          idProduto: produto.id,
+          quantidade,
+          precoUnitario: produto.preco
+        });
+      }
+
+      return reservados;
     });
   }
 
   async devolverEstoque(itens) {
-    return new Promise((resolve, reject) => {
-      this.#estoqueLock = this.#estoqueLock.then(() => {
-        for (const { idProduto, quantidade } of itens) {
-          const produto = this.#products.get(idProduto);
-          if (produto) {
-            produto.estoque += quantidade;
-          }
+    return this.#filaOperacoes.enqueue(() => {
+      for (const { idProduto, quantidade } of itens) {
+        const produto = this.#products.get(idProduto);
+        if (produto) {
+          produto.estoque += quantidade;
         }
-      }).then(resolve).catch(reject);
+      }
     });
   }
 }
