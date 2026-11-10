@@ -104,7 +104,7 @@ router.put('/:id', validate(schemas.atualizar), asyncHandler(async (req, res) =>
 // DELETE: /api/artesaos/5
 router.delete('/:id', validate(schemas.deletar), asyncHandler(async (req, res) => {
   const id = parseInt(req.params.id, 10);
-  artesaoService.deletar(id);
+  await artesaoService.deletar(id);
   res.status(204).send();
 }));
 

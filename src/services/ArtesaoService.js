@@ -1,10 +1,11 @@
 import bcrypt from 'bcryptjs';
 import Artesao from '../models/Artesao.js';
+import { createSerialQueue } from '../utils/serialQueue.js';
 import { NotFoundError, ConflictError, BadRequestError } from '../utils/errors.js';
 
 class ArtesaoService {
   #artesaos = new Map();
-  #cadastroLock = Promise.resolve();
+  #filaOperacoes = createSerialQueue();
 
   async #hashPassword(password) {
     return bcrypt.hash(password, 10);
@@ -48,9 +49,7 @@ class ArtesaoService {
     const cpf = this.#normalizarCpf(dto.cpf);
     const senhaHash = await this.#hashPassword(dto.password);
 
-    await this.#cadastroLock;
-
-    const operacao = (async () => {
+    return this.#filaOperacoes.enqueue(async () => {
       this.#garantirUnicidade(dto.username.trim(), dto.email.trim(), cpf);
 
       const artesao = new Artesao(
@@ -67,12 +66,7 @@ class ArtesaoService {
       this.#artesaos.set(artesao.id, artesao);
 
       return artesao.toGetDto();
-    })();
-
-    // A fila precisa continuar utilizável mesmo quando a operação falha.
-    this.#cadastroLock = operacao.catch(() => {});
-
-    return operacao;
+    });
   }
 
   listar() {
@@ -126,9 +120,7 @@ class ArtesaoService {
       novoHash = await this.#hashPassword(dto.password);
     }
 
-    await this.#cadastroLock;
-
-    const operacao = (async () => {
+    return this.#filaOperacoes.enqueue(async () => {
       this.#garantirUnicidade(dto.username.trim(), dto.email.trim(), cpf, id);
 
       artesao.username = dto.username.trim();
@@ -144,17 +136,15 @@ class ArtesaoService {
       }
 
       return artesao.toGetDto();
-    })();
-
-    this.#cadastroLock = operacao.catch(() => {});
-
-    return operacao;
+    });
   }
 
   deletar(id) {
-    if (!this.#artesaos.delete(id)) {
-      throw new NotFoundError(`Artesão com Id ${id} não foi encontrado.`);
-    }
+    return this.#filaOperacoes.enqueue(() => {
+      if (!this.#artesaos.delete(id)) {
+        throw new NotFoundError(`Artesão com Id ${id} não foi encontrado.`);
+      }
+    });
   }
 }
 
