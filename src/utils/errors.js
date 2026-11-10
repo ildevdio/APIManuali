@@ -1,40 +1,34 @@
-export class NotFoundError extends Error {
-  constructor(message) {
+export class HttpError extends Error {
+  constructor(message, statusCode) {
     super(message);
-    this.name = 'NotFoundError';
-    this.statusCode = 404;
+    this.name = new.target.name;
+    this.statusCode = statusCode;
   }
 }
 
-export class ConflictError extends Error {
-  constructor(message) {
-    super(message);
-    this.name = 'ConflictError';
-    this.statusCode = 409;
+export class NotFoundError extends HttpError {
+  constructor(message) {super(message, 404);}
+}
+
+export class ConflictError extends HttpError {
+  constructor(message) {super(message, 409);}
+}
+
+export class BadRequestError extends HttpError {
+  constructor(message) {super(message, 400);}
+}
+
+export class InternalServerError extends HttpError {
+  constructor(message = "Erro interno do servidor") {super(message, 500);}
+}
+
+export class ValidationError extends HttpError {
+  constructor(errors){
+    super('Erro de validação.',400);
+    this.errors=errors;
   }
 }
 
-export class BadRequestError extends Error {
-  constructor(message) {
-    super(message);
-    this.name = 'BadRequestError';
-    this.statusCode = 400;
-  }
-}
-
-export class InternalServerError extends Error {
-  constructor(message = 'Erro interno do servidor.') {
-    super(message);
-    this.name = 'InternalServerError';
-    this.statusCode = 500;
-  }
-}
-
-export class ValidationError extends Error {
-  constructor(errors) {
-    super('Erro de validação.');
-    this.name = 'ValidationError';
-    this.statusCode = 400;
-    this.errors = errors;
-  }
+export class UnauthorizedError extends HttpError {
+  constructor(message = 'Não autenticado.') { super(message, 401); }
 }
