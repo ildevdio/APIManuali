@@ -1,10 +1,11 @@
 import bcrypt from 'bcryptjs';
 import Adm from '../models/Adm.js';
+import { createSerialQueue } from '../utils/serialQueue.js';
 import { NotFoundError, ConflictError, BadRequestError } from '../utils/errors.js';
 
 class AdmService {
   #adms = new Map();
-  #cadastroLock = Promise.resolve();
+  #filaOperacoes = createSerialQueue();
 
   async #hashPassword(password) {
     return bcrypt.hash(password, 10);
@@ -37,9 +38,7 @@ class AdmService {
 
     const senhaHash = await this.#hashPassword(dto.password);
 
-    await this.#cadastroLock;
-
-    this.#cadastroLock = (async () => {
+    return this.#filaOperacoes.enqueue(async () => {
       this.#garantirUnicidade(dto.username.trim(), dto.email.trim());
 
       const adm = new Adm(dto.username.trim(), senhaHash, dto.email.trim());
@@ -47,9 +46,7 @@ class AdmService {
       this.#adms.set(adm.idAdm, adm);
 
       return adm.toGetDto();
-    })();
-
-    return this.#cadastroLock;
+    });
   }
 
   listar() {
@@ -99,9 +96,7 @@ class AdmService {
       novoHash = await this.#hashPassword(dto.password);
     }
 
-    await this.#cadastroLock;
-
-    this.#cadastroLock = (async () => {
+    return this.#filaOperacoes.enqueue(async () => {
       this.#garantirUnicidade(dto.username.trim(), dto.email.trim(), id);
 
       adm.username = dto.username.trim();
@@ -112,15 +107,15 @@ class AdmService {
       }
 
       return adm.toGetDto();
-    })();
-
-    return this.#cadastroLock;
+    });
   }
 
   deletar(id) {
-    if (!this.#adms.delete(id)) {
-      throw new NotFoundError(`Administrador com Id ${id} não foi encontrado.`);
-    }
+    return this.#filaOperacoes.enqueue(() => {
+      if (!this.#adms.delete(id)) {
+        throw new NotFoundError(`Administrador com Id ${id} não foi encontrado.`);
+      }
+    });
   }
 }
 
