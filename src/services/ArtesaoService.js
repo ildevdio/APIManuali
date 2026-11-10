@@ -50,7 +50,7 @@ class ArtesaoService {
 
     await this.#cadastroLock;
 
-    this.#cadastroLock = (async () => {
+    const operacao = (async () => {
       this.#garantirUnicidade(dto.username.trim(), dto.email.trim(), cpf);
 
       const artesao = new Artesao(
@@ -69,7 +69,10 @@ class ArtesaoService {
       return artesao.toGetDto();
     })();
 
-    return this.#cadastroLock;
+    // A fila precisa continuar utilizável mesmo quando a operação falha.
+    this.#cadastroLock = operacao.catch(() => {});
+
+    return operacao;
   }
 
   listar() {
@@ -125,7 +128,7 @@ class ArtesaoService {
 
     await this.#cadastroLock;
 
-    this.#cadastroLock = (async () => {
+    const operacao = (async () => {
       this.#garantirUnicidade(dto.username.trim(), dto.email.trim(), cpf, id);
 
       artesao.username = dto.username.trim();
@@ -143,7 +146,9 @@ class ArtesaoService {
       return artesao.toGetDto();
     })();
 
-    return this.#cadastroLock;
+    this.#cadastroLock = operacao.catch(() => {});
+
+    return operacao;
   }
 
   deletar(id) {

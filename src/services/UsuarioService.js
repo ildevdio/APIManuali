@@ -40,8 +40,7 @@ class UsuarioService {
     // Aguarda o lock anterior e executa a operação
     await this.#cadastroLock;
 
-    // Cria nova promise para o lock
-    this.#cadastroLock = (async () => {
+    const operacao = (async () => {
       this.#garantirUnicidade(dto.username.trim(), dto.email.trim());
 
       const usuario = new User(
@@ -56,7 +55,10 @@ class UsuarioService {
       return usuario.toGetDto();
     })();
 
-    return this.#cadastroLock;
+    // A fila precisa continuar utilizável mesmo quando a operação falha.
+    this.#cadastroLock = operacao.catch(() => {});
+
+    return operacao;
   }
 
   listar() {
@@ -109,7 +111,7 @@ class UsuarioService {
 
     await this.#cadastroLock;
 
-    this.#cadastroLock = (async () => {
+    const operacao = (async () => {
       this.#garantirUnicidade(dto.username.trim(), dto.email.trim(), id);
 
       usuario.username = dto.username.trim();
@@ -123,7 +125,9 @@ class UsuarioService {
       return usuario.toGetDto();
     })();
 
-    return this.#cadastroLock;
+    this.#cadastroLock = operacao.catch(() => {});
+
+    return operacao;
   }
 
   deletar(id) {

@@ -39,7 +39,7 @@ class AdmService {
 
     await this.#cadastroLock;
 
-    this.#cadastroLock = (async () => {
+    const operacao = (async () => {
       this.#garantirUnicidade(dto.username.trim(), dto.email.trim());
 
       const adm = new Adm(dto.username.trim(), senhaHash, dto.email.trim());
@@ -49,7 +49,10 @@ class AdmService {
       return adm.toGetDto();
     })();
 
-    return this.#cadastroLock;
+    // A fila precisa continuar utilizável mesmo quando a operação falha.
+    this.#cadastroLock = operacao.catch(() => {});
+
+    return operacao;
   }
 
   listar() {
@@ -101,7 +104,7 @@ class AdmService {
 
     await this.#cadastroLock;
 
-    this.#cadastroLock = (async () => {
+    const operacao = (async () => {
       this.#garantirUnicidade(dto.username.trim(), dto.email.trim(), id);
 
       adm.username = dto.username.trim();
@@ -114,7 +117,9 @@ class AdmService {
       return adm.toGetDto();
     })();
 
-    return this.#cadastroLock;
+    this.#cadastroLock = operacao.catch(() => {});
+
+    return operacao;
   }
 
   deletar(id) {
