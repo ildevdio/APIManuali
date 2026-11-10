@@ -31,7 +31,7 @@ describe('utils/errors.js', () => {
   it('InternalServerError → 500 com mensagem padrão', () => {
     const erro = new InternalServerError();
     expect(erro.statusCode).toBe(500);
-    expect(erro.message).toBe('Erro interno do servidor.');
+    expect(erro.message).toBe('Erro interno do servidor');
   });
 
   it('ValidationError → 400 com lista de erros', () => {
