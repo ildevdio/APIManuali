@@ -5,6 +5,7 @@ on:
     branches: [main, master, dio]
   pull_request:
     branches: [main, master, dio]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -100,3 +101,11 @@ jobs:
       - name: Mostrar log do servidor em caso de falha
         if: failure()
         run: cat server.log
+
+      - name: Upload do log do servidor
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: server-log
+          path: server.log
+          if-no-files-found: ignore
