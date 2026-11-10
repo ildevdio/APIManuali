@@ -84,7 +84,7 @@ class PedidoService {
 
   async atualizarStatus(id, status) {
     await this.#pedidoLock;
-    this.#pedidoLock = (async () => {
+    const operacao = (async () => {
       const pedido = this.#pedidos.get(id);
       if (!pedido) {
         throw new NotFoundError(`Pedido com Id ${id} não foi encontrado...`);
@@ -95,7 +95,10 @@ class PedidoService {
       return this.#toGetDto(pedido);
     })();
 
-    return this.#pedidoLock;
+    // A fila precisa continuar utilizável mesmo quando a operação falha.
+    this.#pedidoLock = operacao.catch(() => {});
+
+    return operacao;
   }
 
   deletar(id) {
