@@ -4,7 +4,7 @@ import bcrypt from 'bcryptjs';
 const prisma = new PrismaClient();
 
 async function main() {
-  const senhaHash = await bcrypt.hash('123456', 10);
+  const password = await bcrypt.hash('123456', 10);
 
   // Categorias (nome é UNIQUE -> upsert é idempotente)
   const nomesCategorias = ['Cerâmica', 'Tecidos', 'Madeira', 'Cestaria'];
@@ -17,18 +17,32 @@ async function main() {
     });
   }
 
-  // Artesão (usuario + artesao criados juntos; email é UNIQUE)
-  const artesaoUser = await prisma.usuario.upsert({
+  // Adm (tabela própria, igual ao models/Adm.js)
+  await prisma.adm.upsert({
+    where: { email: 'adm@manuali.dev' },
+    update: {},
+    create: {
+      username: 'Administrador',
+      password,
+      email: 'adm@manuali.dev',
+    },
+  });
+
+  // Artesão (User + Artesao criados juntos; email é UNIQUE)
+  const artesaoUser = await prisma.user.upsert({
     where: { email: 'artesao@manuali.dev' },
     update: {},
     create: {
-      nome: 'Maria Artesã',
+      username: 'Maria Artesã',
+      password,
       email: 'artesao@manuali.dev',
-      senhaHash,
+      cep: '12530-000',
       artesao: {
         create: {
-          cpfCnpj: '12345678901',
-          historia: 'Ceramista há 20 anos.',
+          cpf: '12345678901',
+          bio: 'Ceramista há 20 anos.',
+          experiencia: '20 anos de experiência com cerâmica',
+          telefone: '12999999999',
           tecnica: 'Torno e queima a lenha',
           municipio: 'Cunha',
           statusCuradoria: 'aprovado',
@@ -37,26 +51,24 @@ async function main() {
     },
   });
 
-  // Consumidor
-  await prisma.usuario.upsert({
+  // Usuário comum (consumidor)
+  await prisma.user.upsert({
     where: { email: 'consumidor@manuali.dev' },
     update: {},
     create: {
-      nome: 'João Consumidor',
+      username: 'João Consumidor',
+      password,
       email: 'consumidor@manuali.dev',
-      senhaHash,
-      consumidor: {
-        create: { enderecoEntrega: 'Rua Exemplo, 100 - Centro' },
-      },
+      cep: '01001-000',
     },
   });
 
   // Produtos de exemplo (só cria se o artesão ainda não tiver produtos)
-  const jaTemProdutos = await prisma.produto.count({
+  const jaTemProdutos = await prisma.product.count({
     where: { artesaoId: artesaoUser.id },
   });
   if (jaTemProdutos === 0) {
-    await prisma.produto.createMany({
+    await prisma.product.createMany({
       data: [
         {
           artesaoId: artesaoUser.id,
@@ -64,6 +76,8 @@ async function main() {
           nome: 'Caneca artesanal',
           descricao: 'Caneca de cerâmica feita à mão.',
           preco: '45.90',
+          estoque: 10,
+          historia: 'Feita no torno, queimada a lenha.',
           tecnica: 'Torno',
           materialOrigem: 'Argila local',
         },
@@ -73,6 +87,8 @@ async function main() {
           nome: 'Vaso pequeno',
           descricao: 'Vaso decorativo esmaltado.',
           preco: '89.00',
+          estoque: 5,
+          historia: 'Modelado à mão, esmalte natural.',
           tecnica: 'Modelagem manual',
           materialOrigem: 'Argila local',
         },
