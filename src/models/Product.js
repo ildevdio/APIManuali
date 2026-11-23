@@ -12,7 +12,7 @@ class Product {
   #historia;
   #artesaoId;
 
-  constructor(nome, descricao, preco, estoque, ativo, categoria, fotos, historia, artesaoId) {
+  constructor({ nome, descricao, preco, estoque, ativo, categoria, fotos, historia, artesaoId }) {
     this.#id = ++productIdCounter;
     this.nome = nome;
     this.descricao = descricao;
