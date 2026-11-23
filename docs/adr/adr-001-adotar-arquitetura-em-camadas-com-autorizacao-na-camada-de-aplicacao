@@ -1,0 +1,53 @@
+# ADR-001: Adotar arquitetura em camadas com autorização na camada de aplicação
+
+- **Status:** Proposta
+- **Data:** 2026-11-23
+- **Autor:** ARTHUR MARQUES FERREIRA (amf@cesar.school)
+- **Turma:** Regular (terças)
+- **Projeto:** Origem · marketplace da economia criativa e do artesanato de Pernambuco
+
+## Contexto
+
+O Origem é um marketplace com três perfis (comprador, artesão e administrador) e guarda dados pessoais e de venda. A equipe é pequena, formada por estudantes que cursam outras disciplinas, com prazo de um semestre, stack e modelo de dados acordados com outras disciplinas e hospedagem sem orçamento de infraestrutura. A prioridade é a confidencialidade: um perfil não pode acessar dados de outro.
+
+## Preocupações
+
+confidencialidade, testabilidade, prazo, simplicidade, custo de infraestrutura
+
+## Decisão
+
+Estruturar o sistema em camadas (apresentação, aplicação, domínio e persistência), com dependência apenas de cima para baixo. A verificação de papel e de propriedade do pedido fica na camada de aplicação, antes de qualquer acesso a dados.
+
+## Justificativa
+
+Nenhuma rota alcança os dados sem passar pela camada de aplicação, então a regra de acesso fica em um único lugar. Isso sustenta a medida do cenário (100% dos acessos cruzados bloqueados e registrados) e torna a regra fácil de testar e auditar. O padrão cabe no prazo e na hospedagem disponíveis.
+
+## Consequências
+
+Ganha: autorização centralizada, testável e auditável, com estrutura previsível para quem entra na equipe. Perde: latência marginal em cada requisição, código repetitivo e risco de sumidouro, quando uma camada só repassa chamadas. Exige disciplina para não pular camadas, o que será conferido em revisão de código.
+
+## Alternativas consideradas
+
+CQRS: exige dois modelos de dados e autorização nos dois lados, complexo demais para o prazo e a equipe. Orientado a Eventos: exige broker de mensagens, que a hospedagem não comporta, e dificulta rastrear quem acessou o quê. Portas e Adaptadores: isola bem o domínio, mas o custo de definir as interfaces é alto para um semestre.
+
+## Rastreabilidade
+
+**Atributo de qualidade:** Segurança (security) · Confidencialidade
+
+**Cenário que originou a decisão:**
+
+> Em operação normal, em produção, um artesão autenticado tenta acessar os detalhes de um pedido de outro artesão, alterando o identificador na requisição à API de pedidos. O sistema nega o acesso (HTTP 403) sem expor nenhum dado do pedido e registra a tentativa em log com usuário, recurso e horário, em 100% das tentativas, verificado por testes automatizados que cobrem todas as rotas de pedido com os três perfis.
+
+**Padrão arquitetural adotado:** Camadas
+
+**Táticas empacotadas:** Encapsular responsabilidades por faixa; Restringir dependências a uma direção
+
+API de pedidos e módulo de autorização. Requisitos: fechar pedido e moderar cadastros.
+
+## Verificação
+
+- **Teste do cenário:** Teste automatizado de integração que, em cada rota de pedido, autentica como um artesão e tenta acessar o pedido de outro artesão trocando o identificador. Passa se a resposta for 403, sem dados do pedido, e houver registro em log com usuário, recurso e horário. Repete com os três perfis. Falha se qualquer rota devolver dados.
+
+---
+
+_Gerado pelo estudo dirigido de Arquitetura de Software · ADS020 · 2026.2._
