@@ -81,7 +81,8 @@ class ProductService {
       select: PRODUCT_SELECT
     });
 
-    return produtoToDto(produto);
+    const dtoResult = produtoToDto(produto);
+    return dtoResult;
   }
 
   async listar() {
@@ -104,15 +105,14 @@ class ProductService {
   }
 
   async buscarPorNome(nome) {
-    const searchTerm = (nome || '').toLowerCase();
-    const produtos = await prisma.product.findMany({
+    const products = await prisma.product.findMany({
       select: PRODUCT_SELECT,
       where: {
-        nome: { contains: searchTerm, mode: 'insensitive' }
+        nome: { equals: nome }
       },
       orderBy: { id: 'asc' }
     });
-    return produtos.map(produtoToDto);
+    return products.map(produtoToDto);
   }
 
   async atualizar(id, dto) {
