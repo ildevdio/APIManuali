@@ -13,7 +13,7 @@ class Product {
   #artesaoId;
 
   constructor({ nome, descricao, preco, estoque, ativo, categoria, fotos, historia, artesaoId }) {
-    this.#id = randomUUID();
+    this.#id = ++productIdCounter;
     this.nome = nome;
     this.descricao = descricao;
     this.estoque = estoque;

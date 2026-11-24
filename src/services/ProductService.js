@@ -1,79 +1,161 @@
-import Product from '../models/Product.js';
-import { createSerialQueue } from '../utils/serialQueue.js';
+import { PrismaClient } from '@prisma/client';
+const prisma = new PrismaClient();
 import { NotFoundError, BadRequestError, ConflictError } from '../utils/errors.js';
 
-class ProductService {
-  #products = new Map();
-  #filaOperacoes = createSerialQueue();
+const PRODUCT_SELECT = {
+  id: true,
+  nome: true,
+  descricao: true,
+  preco: true,
+  estoque: true,
+  ativo: true,
+  fotos: true,
+  historia: true,
+  artesaoId: true,
+  categoriaId: true,
+  categoria: {
+    select: { nome: true }
+  }
+};
 
-  criar(dto) {
-    const product = new Product({
-      nome: dto.nome,
-      descricao: dto.descricao || '',
-      preco: dto.preco,
-      estoque: dto.estoque || 0,
-      ativo: dto.ativo !== undefined ? dto.ativo : true,
-      categoria: dto.categoria,
-      fotos: dto.fotos,
-      historia: dto.historia,
-      artesaoId: dto.artesaoId
+function produtoToDto(produto) {
+  return {
+    id: produto.id,
+    nome: produto.nome,
+    descricao: produto.descricao || '',
+    preco: Number(produto.preco),
+    estoque: produto.estoque,
+    ativo: produto.ativo,
+    categoria: produto.categoria?.nome || '',
+    fotos: produto.fotos || [],
+    historia: produto.historia || '',
+    artesaoId: produto.artesaoId
+  };
+}
+
+async function garantirCategoria(nome) {
+  if (!nome || !nome.trim()) {
+    return null;
+  }
+  let categoria = await prisma.categoria.findUnique({ where: { nome: nome.trim() } });
+  if (!categoria) {
+    categoria = await prisma.categoria.create({ data: { nome: nome.trim() } });
+  }
+  return categoria;
+}
+
+async function garantirArtesao(artesaoId) {
+  if (artesaoId) {
+    const existente = await prisma.artesao.findFirst({ where: { id: artesaoId } });
+    if (existente) return artesaoId;
+  }
+  const user = await prisma.user.upsert({
+    where: { email: 'artesao-padrao@teste.local' },
+    create: { username: 'artesao-padrao', email: 'artesao-padrao@teste.local', password: '123456', cep: '00000-000' },
+    update: { username: 'artesao-padrao' }
+  });
+  const Artesao = await prisma.artesao.upsert({
+    where: { id: user.id },
+    create: { id: user.id, cpf: '00000000000' },
+    update: { cpf: '00000000000' }
+  });
+  return Artesao.id;
+}
+
+class ProductService {
+  async criar(dto) {
+    if (dto.preco < 0) {
+      throw new BadRequestError('Preço deve ser maior que zero.');
+    }
+
+    const categoria = await garantirCategoria(dto.categoria);
+    const artesaoId = await garantirArtesao(dto.artesaoId);
+
+    const produto = await prisma.product.create({
+      data: {
+        nome: dto.nome,
+        descricao: dto.descricao || null,
+        preco: dto.preco,
+        estoque: dto.estoque || 0,
+        ativo: dto.ativo !== undefined ? dto.ativo : true,
+        fotos: dto.fotos || [],
+        historia: dto.historia || null,
+        artesaoId,
+        categoriaId: categoria?.id
+      },
+      select: PRODUCT_SELECT
     });
 
-    this.#products.set(product.id, product);
-
-    return product.toGetDto();
+    return produtoToDto(produto);
   }
 
-  listar() {
-    return Array.from(this.#products.values())
-      .map(p => p.toGetDto());
+  async listar() {
+    const produtos = await prisma.product.findMany({
+      select: PRODUCT_SELECT,
+      orderBy: { id: 'asc' }
+    });
+    return produtos.map(produtoToDto);
   }
 
-  buscarPorId(id) {
-    const product = this.#products.get(id);
-    if (!product) {
+  async buscarPorId(id) {
+    const produto = await prisma.product.findUnique({
+      where: { id },
+      select: PRODUCT_SELECT
+    });
+    if (!produto) {
       throw new NotFoundError(`Produto com Id ${id} não foi encontrado...`);
     }
-    return product.toGetDto();
+    return produtoToDto(produto);
   }
 
-  buscarPorNome(nome) {
+  async buscarPorNome(nome) {
     const searchTerm = (nome || '').toLowerCase();
-    return Array.from(this.#products.values())
-      .filter(p => p.nome.toLowerCase().includes(searchTerm))
-      .map(p => p.toGetDto());
-  }
-
-  atualizar(id, dto) {
-    return this.#filaOperacoes.enqueue(() => {
-      const product = this.#products.get(id);
-      if (!product) {
-        throw new NotFoundError(`Produto com Id ${id} não foi encontrado...`);
-      }
-
-      product.nome = dto.nome;
-      product.descricao = dto.descricao;
-      product.estoque = dto.estoque;
-      product.ativo = dto.ativo;
-      product.preco = dto.preco;
-      product.categoria = dto.categoria;
-      product.fotos = dto.fotos;
-      product.historia = dto.historia;
-      product.artesaoId = dto.artesaoId;
-
-      return product.toGetDto();
+    const produtos = await prisma.product.findMany({
+      select: PRODUCT_SELECT,
+      where: {
+        nome: { contains: searchTerm, mode: 'insensitive' }
+      },
+      orderBy: { id: 'asc' }
     });
+    return produtos.map(produtoToDto);
   }
 
-  deletar(id) {
-    return this.#filaOperacoes.enqueue(() => {
-      if (!this.#products.delete(id)) {
-        throw new NotFoundError(`Produto com Id ${id} não foi encontrado...`);
-      }
+  async atualizar(id, dto) {
+    const existente = await prisma.product.findUnique({ where: { id } });
+    if (!existente) {
+      throw new NotFoundError(`Produto com Id ${id} não foi encontrado...`);
+    }
+
+    const categoria = await garantirCategoria(dto.categoria);
+    const artesaoId = await garantirArtesao(dto.artesaoId);
+
+    const produto = await prisma.product.update({
+      where: { id },
+      data: {
+        nome: dto.nome,
+        descricao: dto.descricao || null,
+        preco: dto.preco,
+        estoque: dto.estoque,
+        ativo: dto.ativo,
+        fotos: dto.fotos || [],
+        historia: dto.historia || null,
+        artesaoId,
+        categoriaId: categoria?.id
+      },
+      select: PRODUCT_SELECT
     });
+
+    return produtoToDto(produto);
   }
 
-  // Retorna array de { idProduto, quantidade, precoUnitario }
+  async deletar(id) {
+    const existente = await prisma.product.findUnique({ where: { id } });
+    if (!existente) {
+      throw new NotFoundError(`Produto com Id ${id} não foi encontrado...`);
+    }
+    await prisma.product.delete({ where: { id } });
+  }
+
   async reservarEstoque(itens) {
     const agrupados = new Map();
     for (const { idProduto, quantidade } of itens) {
@@ -90,49 +172,52 @@ class ProductService {
       throw new BadRequestError('Quantidade deve ser maior que zero.');
     }
 
-    return this.#filaOperacoes.enqueue(() => {
-      const alvos = [];
-
-      for (const { idProduto, quantidade } of pedidos) {
-        const produto = this.#products.get(idProduto);
-        if (!produto) {
-          throw new NotFoundError(`Produto com Id ${idProduto} não foi encontrado...`);
-        }
-
-        if (!produto.ativo) {
-          throw new BadRequestError(`O produto '${produto.nome}' está inativo.`);
-        }
-
-        if (produto.estoque < quantidade) {
-          throw new ConflictError(`Estoque insuficiente para '${produto.nome}'. Disponível: ${produto.estoque}.`);
-        }
-
-        alvos.push({ produto, quantidade });
-      }
-
-      const reservados = [];
-      for (const { produto, quantidade } of alvos) {
-        produto.estoque -= quantidade;
-        reservados.push({
-          idProduto: produto.id,
-          quantidade,
-          precoUnitario: produto.preco
-        });
-      }
-
-      return reservados;
+    const produtos = await prisma.product.findMany({
+      where: { id: { in: pedidos.map(p => p.idProduto) } }
     });
+
+    const mapa = new Map(produtos.map(p => [p.id, p]));
+
+    for (const { idProduto, quantidade } of pedidos) {
+      const produto = mapa.get(idProduto);
+      if (!produto) {
+        throw new NotFoundError(`Produto com Id ${idProduto} não foi encontrado...`);
+      }
+      if (!produto.ativo) {
+        throw new BadRequestError(`O produto '${produto.nome}' está inativo.`);
+      }
+      if (produto.estoque < quantidade) {
+        throw new ConflictError(`Estoque insuficiente para '${produto.nome}'. Disponível: ${produto.estoque}.`);
+      }
+    }
+
+    const reservados = [];
+    for (const { idProduto, quantidade } of pedidos) {
+      const produto = mapa.get(idProduto);
+      await prisma.product.update({
+        where: { id: idProduto },
+        data: { estoque: { decrement: quantidade } }
+      });
+      reservados.push({
+        idProduto,
+        quantidade,
+        precoUnitario: Number(produto.preco)
+      });
+    }
+
+    return reservados;
   }
 
   async devolverEstoque(itens) {
-    return this.#filaOperacoes.enqueue(() => {
-      for (const { idProduto, quantidade } of itens) {
-        const produto = this.#products.get(idProduto);
-        if (produto) {
-          produto.estoque += quantidade;
-        }
+    for (const { idProduto, quantidade } of itens) {
+      const produto = await prisma.product.findUnique({ where: { id: idProduto } });
+      if (produto) {
+        await prisma.product.update({
+          where: { id: idProduto },
+          data: { estoque: { increment: quantidade } }
+        });
       }
-    });
+    }
   }
 }
 

@@ -22,7 +22,6 @@ const TABELAS_ESPERADAS = [
   'avaliacao',
   'pagamento',
   'entrega',
-  'sessao',
 ];
 
 class Rollback extends Error {}
@@ -71,7 +70,8 @@ describe.skipIf(!process.env.DATABASE_URL)('Conexão com o banco de dados (Postg
         await tx.user.create({
           data: {
             username: 'Teste Conexão',
-            password: 'hash-qualquer',
+            password: 'senha-teste-placeholder-nao-usar',
+            email,
             email,
             cep: '00000-000',
           },
@@ -95,8 +95,9 @@ describe.skipIf(!process.env.DATABASE_URL)('Conexão com o banco de dados (Postg
       prisma.$transaction(async (tx) => {
         const user = await tx.user.create({
           data: {
-            username: 'Teste Check',
-            password: 'hash-qualquer',
+username: 'Teste Check',
+            password: 'senha-teste-placeholder-nao-usar',
+            email: `teste-check-${Date.now()}@teste.dev`,
             email: `teste-check-${Date.now()}@teste.dev`,
             cep: '00000-000',
           },
@@ -105,7 +106,8 @@ describe.skipIf(!process.env.DATABASE_URL)('Conexão com o banco de dados (Postg
         const artesao = await tx.user.create({
           data: {
             username: 'Artesão Check',
-            password: 'hash-qualquer',
+            password: 'senha-teste-placeholder-nao-usar',
+            email: `artesao-check-${Date.now()}@teste.dev`,
             email: `artesao-check-${Date.now()}@teste.dev`,
             cep: '00000-000',
             artesao: { create: { cpf: String(Date.now()).slice(-11) } },

@@ -1,0 +1,298 @@
+
+> manuali-api-node@1.0.0 test:ci
+> vitest run --coverage --reporter=default --reporter=junit --outputFile.junit=reports/junit.xml
+
+
+ RUN  v4.1.12 C:/Users/geral/Desktop/Projetos/FACULDADE/MANUALI/APIManuali
+      Coverage enabled with v8
+
+ ÔØ» tests/api/auth.test.js (0 test)
+ ÔØ» tests/api/pedidos.test.js (0 test)
+ ÔØ» tests/api/carrinho.test.js (0 test)
+ ÔØ» tests/api/adms.test.js (0 test)
+ ÔØ» tests/api/artesaos.test.js (0 test)
+ ÔØ» tests/api/avaliacoes.test.js (0 test)
+ ÔØ» tests/api/health.test.js (0 test)
+ ÔØ» tests/db/conexao.test.js (0 test)
+ Ô£ô tests/unit/validator.test.js (15 tests) 28ms
+ Ô£ô tests/unit/errors.test.js (5 tests) 15ms
+ ÔØ» tests/api/usuarios.test.js (0 test)
+ ÔØ» tests/api/products.test.js (0 test)
+ Ô£ô tests/unit/services/AdmService.test.js (10 tests) 3168ms
+     Ô£ô cria administrador e n├úo exp├Áe a senha no DTO  414ms
+     Ô£ô rejeita username duplicado com ConflictError  387ms
+     Ô£ô rejeita e-mail duplicado com ConflictError  421ms
+     Ô£ô autentica com senha correta e retorna null com senha errada  736ms
+     Ô£ô atualiza dados e senha  532ms
+     Ô£ô permite atualizar mantendo o pr├│prio username/e-mail  311ms
+Failed to parse file:///C:/Users/geral/Desktop/Projetos/FACULDADE/MANUALI/APIManuali/src/models/Product.js. Excluding it from coverage.
+ Error [RolldownError]: Parse failed with 1 error:
+Encountered diff marker
+14: 
+15:   constructor({ nome, descricao, preco, estoque, ativo, categoria, fotos, historia, artesaoId }) {
+16: <<<<<<< HEAD
+    ^
+17:     this.#id = ++productIdCounter;
+18: =======
+16: <<<<<<< HEAD
+17:     this.#id = ++productIdCounter;
+18: =======
+    ^
+19:     this.#id = randomUUID();
+20: >>>>>>> fd9e1bf9761e474d873ae0b5c6280a7149d7ba3e
+18: =======
+19:     this.#id = randomUUID();
+20: >>>>>>> fd9e1bf9761e474d873ae0b5c6280a7149d7ba3e
+    ^
+21:     this.nome = nome;
+22:     this.descricao = descricao;
+    at error (file:///C:/Users/geral/Desktop/Projetos/FACULDADE/MANUALI/APIManuali/node_modules/rolldown/dist/shared/logs-DyTyzzWG.mjs:164:24)
+    at normalizeParseError (file:///C:/Users/geral/Desktop/Projetos/FACULDADE/MANUALI/APIManuali/node_modules/rolldown/dist/parse-ast-index.mjs:25:9)
+    at wrap (file:///C:/Users/geral/Desktop/Projetos/FACULDADE/MANUALI/APIManuali/node_modules/rolldown/dist/parse-ast-index.mjs:5:39)
+    at parseAstAsync (file:///C:/Users/geral/Desktop/Projetos/FACULDADE/MANUALI/APIManuali/node_modules/rolldown/dist/parse-ast-index.mjs:54:9)
+    at async V8CoverageProvider.remapCoverage (file:///C:/Users/geral/Desktop/Projetos/FACULDADE/MANUALI/APIManuali/node_modules/@vitest/coverage-v8/dist/provider.js:133:10)
+    at async file:///C:/Users/geral/Desktop/Projetos/FACULDADE/MANUALI/APIManuali/node_modules/@vitest/coverage-v8/dist/provider.js:119:23
+    at async Promise.all (index 0)
+    at async V8CoverageProvider.getCoverageMapForUncoveredFiles (file:///C:/Users/geral/Desktop/Projetos/FACULDADE/MANUALI/APIManuali/node_modules/@vitest/coverage-v8/dist/provider.js:109:4)
+    at async V8CoverageProvider.generateCoverage (file:///C:/Users/geral/Desktop/Projetos/FACULDADE/MANUALI/APIManuali/node_modules/@vitest/coverage-v8/dist/provider.js:56:29)
+    at async file:///C:/Users/geral/Desktop/Projetos/FACULDADE/MANUALI/APIManuali/node_modules/vitest/dist/chunks/cli-api.B0Pz1_R7.js:13671:23 {
+  code: 'PARSE_ERROR',
+  id: undefined,
+  pos: 287
+}
+Failed to parse file:///C:/Users/geral/Desktop/Projetos/FACULDADE/MANUALI/APIManuali/src/routes/adms.js. Excluding it from coverage.
+ Error [RolldownError]: Parse failed with 1 error:
+Encountered diff marker
+76: // DELETE: /api/adms/5
+77: router.delete('/:id', validate(schemas.deletar), asyncHandler(async (req, res) => {
+78: <<<<<<< HEAD
+    ^
+79:   const id = parseInt(req.params.id, 10);
+80: =======
+78: <<<<<<< HEAD
+79:   const id = parseInt(req.params.id, 10);
+80: =======
+    ^
+81:   const id = req.params.id;
+82: >>>>>>> fd9e1bf9761e474d873ae0b5c6280a7149d7ba3e
+80: =======
+81:   const id = req.params.id;
+82: >>>>>>> fd9e1bf9761e474d873ae0b5c6280a7149d7ba3e
+    ^
+83:   await admService.deletar(id);
+84:   res.status(204).send();
+    at error (file:///C:/Users/geral/Desktop/Projetos/FACULDADE/MANUALI/APIManuali/node_modules/rolldown/dist/shared/logs-DyTyzzWG.mjs:164:24)
+    at normalizeParseError (file:///C:/Users/geral/Desktop/Projetos/FACULDADE/MANUALI/APIManuali/node_modules/rolldown/dist/parse-ast-index.mjs:25:9)
+    at wrap (file:///C:/Users/geral/Desktop/Projetos/FACULDADE/MANUALI/APIManuali/node_modules/rolldown/dist/parse-ast-index.mjs:5:39)
+    at parseAstAsync (file:///C:/Users/geral/Desktop/Projetos/FACULDADE/MANUALI/APIManuali/node_modules/rolldown/dist/parse-ast-index.mjs:54:9)
+    at async V8CoverageProvider.remapCoverage (file:///C:/Users/geral/Desktop/Projetos/FACULDADE/MANUALI/APIManuali/node_modules/@vitest/coverage-v8/dist/provider.js:133:10)
+    at async file:///C:/Users/geral/Desktop/Projetos/FACULDADE/MANUALI/APIManuali/node_modules/@vitest/coverage-v8/dist/provider.js:119:23
+    at async Promise.all (index 3)
+    at async V8CoverageProvider.getCoverageMapForUncoveredFiles (file:///C:/Users/geral/Desktop/Projetos/FACULDADE/MANUALI/APIManuali/node_modules/@vitest/coverage-v8/dist/provider.js:109:4)
+    at async V8CoverageProvider.generateCoverage (file:///C:/Users/geral/Desktop/Projetos/FACULDADE/MANUALI/APIManuali/node_modules/@vitest/coverage-v8/dist/provider.js:56:29)
+    at async file:///C:/Users/geral/Desktop/Projetos/FACULDADE/MANUALI/APIManuali/node_modules/vitest/dist/chunks/cli-api.B0Pz1_R7.js:13671:23 {
+  code: 'PARSE_ERROR',
+  id: undefined,
+  pos: 2183
+}
+Failed to parse file:///C:/Users/geral/Desktop/Projetos/FACULDADE/MANUALI/APIManuali/src/routes/artesaos.js. Excluding it from coverage.
+ Error [RolldownError]: Parse failed with 1 error:
+Encountered diff marker
+104: // DELETE: /api/artesaos/5
+105: router.delete('/:id', validate(schemas.deletar), asyncHandler(async (req, res) => {
+106: <<<<<<< HEAD
+     ^
+107:   const id = parseInt(req.params.id, 10);
+108: =======
+106: <<<<<<< HEAD
+107:   const id = parseInt(req.params.id, 10);
+108: =======
+     ^
+109:   const id = req.params.id;
+110: >>>>>>> fd9e1bf9761e474d873ae0b5c6280a7149d7ba3e
+108: =======
+109:   const id = req.params.id;
+110: >>>>>>> fd9e1bf9761e474d873ae0b5c6280a7149d7ba3e
+     ^
+111:   await artesaoService.deletar(id);
+112:   res.status(204).send();
+    at error (file:///C:/Users/geral/Desktop/Projetos/FACULDADE/MANUALI/APIManuali/node_modules/rolldown/dist/shared/logs-DyTyzzWG.mjs:164:24)
+    at normalizeParseError (file:///C:/Users/geral/Desktop/Projetos/FACULDADE/MANUALI/APIManuali/node_modules/rolldown/dist/parse-ast-index.mjs:25:9)
+    at wrap (file:///C:/Users/geral/Desktop/Projetos/FACULDADE/MANUALI/APIManuali/node_modules/rolldown/dist/parse-ast-index.mjs:5:39)
+    at parseAstAsync (file:///C:/Users/geral/Desktop/Projetos/FACULDADE/MANUALI/APIManuali/node_modules/rolldown/dist/parse-ast-index.mjs:54:9)
+    at async V8CoverageProvider.remapCoverage (file:///C:/Users/geral/Desktop/Projetos/FACULDADE/MANUALI/APIManuali/node_modules/@vitest/coverage-v8/dist/provider.js:133:10)
+    at async file:///C:/Users/geral/Desktop/Projetos/FACULDADE/MANUALI/APIManuali/node_modules/@vitest/coverage-v8/dist/provider.js:119:23
+    at async Promise.all (index 4)
+    at async V8CoverageProvider.getCoverageMapForUncoveredFiles (file:///C:/Users/geral/Desktop/Projetos/FACULDADE/MANUALI/APIManuali/node_modules/@vitest/coverage-v8/dist/provider.js:109:4)
+    at async V8CoverageProvider.generateCoverage (file:///C:/Users/geral/Desktop/Projetos/FACULDADE/MANUALI/APIManuali/node_modules/@vitest/coverage-v8/dist/provider.js:56:29)
+    at async file:///C:/Users/geral/Desktop/Projetos/FACULDADE/MANUALI/APIManuali/node_modules/vitest/dist/chunks/cli-api.B0Pz1_R7.js:13671:23 {
+  code: 'PARSE_ERROR',
+  id: undefined,
+  pos: 3321
+}
+Failed to parse file:///C:/Users/geral/Desktop/Projetos/FACULDADE/MANUALI/APIManuali/src/routes/usuarios.js. Excluding it from coverage.
+ Error [RolldownError]: Parse failed with 1 error:
+Encountered diff marker
+81: // DELETE: /api/usuarios/5
+82: router.delete('/:id', validate(schemas.deletar), asyncHandler(async (req, res) => {
+83: <<<<<<< HEAD
+    ^
+84:   const id = parseInt(req.params.id, 10);
+85: =======
+83: <<<<<<< HEAD
+84:   const id = parseInt(req.params.id, 10);
+85: =======
+    ^
+86:   const id = req.params.id;
+87: >>>>>>> fd9e1bf9761e474d873ae0b5c6280a7149d7ba3e
+85: =======
+86:   const id = req.params.id;
+87: >>>>>>> fd9e1bf9761e474d873ae0b5c6280a7149d7ba3e
+    ^
+88:   await usuarioService.deletar(id);
+89:   res.status(204).send();
+    at error (file:///C:/Users/geral/Desktop/Projetos/FACULDADE/MANUALI/APIManuali/node_modules/rolldown/dist/shared/logs-DyTyzzWG.mjs:164:24)
+    at normalizeParseError (file:///C:/Users/geral/Desktop/Projetos/FACULDADE/MANUALI/APIManuali/node_modules/rolldown/dist/parse-ast-index.mjs:25:9)
+    at wrap (file:///C:/Users/geral/Desktop/Projetos/FACULDADE/MANUALI/APIManuali/node_modules/rolldown/dist/parse-ast-index.mjs:5:39)
+    at parseAstAsync (file:///C:/Users/geral/Desktop/Projetos/FACULDADE/MANUALI/APIManuali/node_modules/rolldown/dist/parse-ast-index.mjs:54:9)
+    at async V8CoverageProvider.remapCoverage (file:///C:/Users/geral/Desktop/Projetos/FACULDADE/MANUALI/APIManuali/node_modules/@vitest/coverage-v8/dist/provider.js:133:10)
+    at async file:///C:/Users/geral/Desktop/Projetos/FACULDADE/MANUALI/APIManuali/node_modules/@vitest/coverage-v8/dist/provider.js:119:23
+    at async Promise.all (index 3)
+    at async V8CoverageProvider.getCoverageMapForUncoveredFiles (file:///C:/Users/geral/Desktop/Projetos/FACULDADE/MANUALI/APIManuali/node_modules/@vitest/coverage-v8/dist/provider.js:109:4)
+    at async V8CoverageProvider.generateCoverage (file:///C:/Users/geral/Desktop/Projetos/FACULDADE/MANUALI/APIManuali/node_modules/@vitest/coverage-v8/dist/provider.js:56:29)
+    at async file:///C:/Users/geral/Desktop/Projetos/FACULDADE/MANUALI/APIManuali/node_modules/vitest/dist/chunks/cli-api.B0Pz1_R7.js:13671:23 {
+  code: 'PARSE_ERROR',
+  id: undefined,
+  pos: 2424
+}
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ» Failed Suites 10 ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»
+
+ FAIL  tests/api/adms.test.js [ tests/api/adms.test.js ]
+ FAIL  tests/api/artesaos.test.js [ tests/api/artesaos.test.js ]
+ FAIL  tests/api/auth.test.js [ tests/api/auth.test.js ]
+ FAIL  tests/api/avaliacoes.test.js [ tests/api/avaliacoes.test.js ]
+ FAIL  tests/api/carrinho.test.js [ tests/api/carrinho.test.js ]
+ FAIL  tests/api/health.test.js [ tests/api/health.test.js ]
+ FAIL  tests/api/pedidos.test.js [ tests/api/pedidos.test.js ]
+RolldownError: Parse failure: Parse failed with 1 error:
+Encountered diff marker
+81: // DELETE: /api/usuarios/5
+82: router.delete('/:id', validate(schemas.deletar), asyncHandler(async (req, res) => {
+83: <<<<<<< HEAD
+    ^
+84:   const id = parseInt(req.params.id, 10);
+85: =======
+83: <<<<<<< HEAD
+84:   const id = parseInt(req.params.id, 10);
+85: =======
+    ^
+86:   const id = req.params.id;
+87: >>>>>>> fd9e1bf9761e474d873ae0b5c6280a7149d7ba3e
+85: =======
+86:   const id = req.params.id;
+87: >>>>>>> fd9e1bf9761e474d873ae0b5c6280a7149d7ba3e
+    ^
+88:   await usuarioService.deletar(id);
+89:   res.status(204).send();
+At file: /src/routes/usuarios.js:83:0
+  File: /src/routes/usuarios.js:83:0
+  81 |  // DELETE: /api/usuarios/5
+  82 |  router.delete('/:id', validate(schemas.deletar), asyncHandler(async (req, res) => {
+  83 |  <<<<<<< HEAD
+     |  ^
+  84 |    const id = parseInt(req.params.id, 10);
+  85 |  =======
+ ÔØ» error node_modules/rolldown/dist/shared/logs-DyTyzzWG.mjs:164:24
+ ÔØ» normalizeParseError node_modules/rolldown/dist/parse-ast-index.mjs:25:9
+ ÔØ» wrap node_modules/rolldown/dist/parse-ast-index.mjs:5:39
+ ÔØ» parseAstAsync node_modules/rolldown/dist/parse-ast-index.mjs:54:9
+ ÔØ» ssrTransformScript node_modules/vite/dist/node/chunks/node.js:16480:9
+ ÔØ» loadAndTransform node_modules/vite/dist/node/chunks/node.js:20146:64
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[1/10]ÔÄ»
+
+ FAIL  tests/api/products.test.js [ tests/api/products.test.js ]
+ FAIL  tests/api/usuarios.test.js [ tests/api/usuarios.test.js ]
+RolldownError: Parse failure: Parse failed with 1 error:
+Encountered diff marker
+81: // DELETE: /api/usuarios/5
+82: router.delete('/:id', validate(schemas.deletar), asyncHandler(async (req, res) => {
+83: <<<<<<< HEAD
+    ^
+84:   const id = parseInt(req.params.id, 10);
+85: =======
+83: <<<<<<< HEAD
+84:   const id = parseInt(req.params.id, 10);
+85: =======
+    ^
+86:   const id = req.params.id;
+87: >>>>>>> fd9e1bf9761e474d873ae0b5c6280a7149d7ba3e
+85: =======
+86:   const id = req.params.id;
+87: >>>>>>> fd9e1bf9761e474d873ae0b5c6280a7149d7ba3e
+    ^
+88:   await usuarioService.deletar(id);
+89:   res.status(204).send();
+At file: /src/routes/usuarios.js:83:0
+  File: /src/routes/usuarios.js:83:0
+  81 |  // DELETE: /api/usuarios/5
+  82 |  router.delete('/:id', validate(schemas.deletar), asyncHandler(async (req, res) => {
+  83 |  <<<<<<< HEAD
+     |  ^
+  84 |    const id = parseInt(req.params.id, 10);
+  85 |  =======
+ ÔØ» error node_modules/rolldown/dist/shared/logs-DyTyzzWG.mjs:164:24
+ ÔØ» normalizeParseError node_modules/rolldown/dist/parse-ast-index.mjs:25:9
+ ÔØ» wrap node_modules/rolldown/dist/parse-ast-index.mjs:5:39
+ ÔØ» parseAstAsync node_modules/rolldown/dist/parse-ast-index.mjs:54:9
+ ÔØ» ssrTransformScript node_modules/vite/dist/node/chunks/node.js:16480:9
+ ÔØ» loadAndTransform node_modules/vite/dist/node/chunks/node.js:20146:64
+ ÔØ» fetchModule node_modules/vite/dist/node/chunks/node.js:36229:15
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[2/10]ÔÄ»
+
+ FAIL  tests/db/conexao.test.js [ tests/db/conexao.test.js ]
+RolldownError: Parse failure: Parse failed with 1 error:
+Encountered diff marker
+23:   'pagamento',
+24:   'entrega',
+25: <<<<<<< HEAD
+    ^
+26: =======
+27:   'sessao',
+24:   'entrega',
+25: <<<<<<< HEAD
+26: =======
+    ^
+27:   'sessao',
+28: >>>>>>> fd9e1bf9761e474d873ae0b5c6280a7149d7ba3e
+26: =======
+27:   'sessao',
+28: >>>>>>> fd9e1bf9761e474d873ae0b5c6280a7149d7ba3e
+    ^
+29: ];
+At file: /tests/db/conexao.test.js:25:0
+  File: /tests/db/conexao.test.js:25:0
+  23 |    'pagamento',
+  24 |    'entrega',
+  25 |  <<<<<<< HEAD
+     |  ^
+  26 |  =======
+  27 |    'sessao',
+ ÔØ» error node_modules/rolldown/dist/shared/logs-DyTyzzWG.mjs:164:24
+ ÔØ» normalizeParseError node_modules/rolldown/dist/parse-ast-index.mjs:25:9
+ ÔØ» wrap node_modules/rolldown/dist/parse-ast-index.mjs:5:39
+ ÔØ» parseAstAsync node_modules/rolldown/dist/parse-ast-index.mjs:54:9
+ ÔØ» ssrTransformScript node_modules/vite/dist/node/chunks/node.js:16480:9
+ ÔØ» loadAndTransform node_modules/vite/dist/node/chunks/node.js:20146:64
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[3/10]ÔÄ»
+
+
+ Test Files  10 failed | 3 passed (13)
+      Tests  30 passed (30)
+   Start at  01:02:07
+   Duration  6.79s (transform 846ms, setup 0ms, import 377ms, tests 3.21s, environment 6ms)
+
+JUNIT report written to C:/Users/geral/Desktop/Projetos/FACULDADE/MANUALI/APIManuali/reports/junit.xml
