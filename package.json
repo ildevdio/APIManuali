@@ -1,0 +1,34 @@
+{
+  "name": "manuali-api-node",
+  "version": "1.0.0",
+  "description": "Node.js version of ManualiAPI",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:ci": "vitest run --coverage --reporter=default --reporter=junit --outputFile.junit=reports/junit.xml",
+    "test:db": "vitest run tests/db"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.19.3",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "node-fetch": "^3.3.2",
+    "swagger-ui-express": "^5.0.0",
+    "yamljs": "^0.3.0"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^4.1.12",
+    "prisma": "^6.19.3",
+    "supertest": "^7.3.2",
+    "vitest": "^4.1.12"
+  }
+}
