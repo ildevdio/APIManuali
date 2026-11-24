@@ -3,7 +3,6 @@ import pedidoService from '../services/PedidoService.js';
 import productService from '../services/ProductService.js';
 import artesaoService from '../services/ArtesaoService.js';
 import usuarioService from '../services/UsuarioService.js';
-import avaliacaoService from '../services/AvaliacaoService.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 
 const router = express.Router();
@@ -26,7 +25,7 @@ router.get('/metricas/vendas', asyncHandler(async (req, res) => {
 
 // GET: /api/admin/metricas/produtos
 router.get('/metricas/produtos', asyncHandler(async (req, res) => {
-  const produtos = productService.listar();
+  const produtos = await productService.listar();
   const totalProdutos = produtos.length;
   const ativos = produtos.filter(p => p.ativo).length;
   const inativos = produtos.filter(p => !p.ativo).length;
@@ -63,12 +62,10 @@ router.get('/metricas/consumidores', asyncHandler(async (req, res) => {
 // GET: /api/admin/metricas/geral
 router.get('/metricas/geral', asyncHandler(async (req, res) => {
   const pedidos = pedidoService.listar();
-  const produtos = productService.listar();
+  const produtos = await productService.listar();
   const artesaos = artesaoService.listar();
   const usuarios = usuarioService.listar();
-  const avaliacoes = [];
   const totalVendas = pedidos.reduce((sum, p) => sum + p.total, 0);
-  const mediaAvaliacoes = avaliacaoService.mediaPorProduto(0);
 
   res.json({
     totalVendas,

@@ -52,16 +52,7 @@ const schemas = {
 // GET: /api/pedidos (com filtros opcionais por usuarioId e status)
 router.get('/', validate(schemas.listar), asyncHandler(async (req, res) => {
   const { usuarioId, status } = req.query;
-  let pedidos = pedidoService.listar();
-
-  if (usuarioId) {
-    const uid = usuarioId;
-    pedidos = pedidos.filter(p => p.usuarioId === uid);
-  }
-
-  if (status) {
-    pedidos = pedidos.filter(p => p.status === status);
-  }
+  const pedidos = pedidoService.listar({ usuarioId, status });
 
   res.json(pedidos);
 }));
@@ -84,12 +75,7 @@ router.post('/', validate(schemas.criar), asyncHandler(async (req, res) => {
       return res.status(400).json({ erro: 'Cada item deve ter idProduto e quantidade (> 0).' });
     }
   }
-  const pedido = await pedidoService.criar({
-    itens: dto.itens,
-    cep: dto.cep,
-    endereco: dto.endereco,
-    usuarioId: dto.usuarioId
-  });
+  const pedido = await pedidoService.criar(req.body);
   res.status(201).location(`/api/pedidos/${pedido.idPedido}`).json(pedido);
 }));
 

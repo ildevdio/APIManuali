@@ -1,7 +1,6 @@
 import express from 'express';
 import productService from '../services/ProductService.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
-import { NotFoundError } from '../utils/errors.js';
 import { validate } from '../middleware/validate.js';
 
 const router = express.Router();
@@ -79,68 +78,28 @@ router.get('/', asyncHandler(async (req, res) => {
 // GET: /api/products/search?nome=caneca
 router.get('/search', validate(schemas.buscarPorNome), asyncHandler(async (req, res) => {
   const { nome } = req.query;
-  let produtos = productService.buscarPorNome(nome);
-  // Ensure produtos is always an array
-  if (!Array.isArray(produtos)) {
-    produtos = [];
-  }
+  const produtos = await productService.buscarPorNome(nome);
   res.json(produtos);
 }))
 
 // GET: /api/products/5
 router.get('/:id', validate(schemas.buscarPorId), asyncHandler(async (req, res) => {
   const id = req.params.id;
-  try {
-    const produto = await productService.buscarPorId(id);
-    res.json(produto);
-  } catch (error) {
-    if (error instanceof NotFoundError) {
-      return res.status(404).json({ erro: error.message });
-    }
-    return res.status(400).json({ erro: error.message });
-  }
+  const produto = await productService.buscarPorId(id);
+  res.json(produto);
 }))
 
 // POST: /api/products
 router.post('/', validate(schemas.criar), asyncHandler(async (req, res) => {
-  const dto = req.body;
-  const produto = await productService.criar({
-    nome: dto.nome,
-    descricao: dto.descricao,
-    preco: dto.preco,
-    estoque: dto.estoque,
-    ativo: dto.ativo,
-    categoria: dto.categoria,
-    fotos: dto.fotos,
-    historia: dto.historia,
-    artesaoId: dto.artesaoId
-  });
+  const produto = await productService.criar(req.body);
   res.status(201).location(`/api/products/${produto.id}`).json(produto);
 }))
 
 // PUT: /api/products/5
 router.put('/:id', validate(schemas.atualizar), asyncHandler(async (req, res) => {
   const id = req.params.id;
-  const dto = req.body;
-  try {
-    const produto = await productService.atualizar(id, {
-      nome: dto.nome,
-      descricao: dto.descricao,
-      preco: dto.preco,
-      estoque: dto.estoque,
-      ativo: dto.ativo,
-      categoria: dto.categoria,
-      fotos: dto.fotos,
-      historia: dto.historia,
-      artesaoId: dto.artesaoId
-    });
-    res.json(produto);
-  } catch (error) {
-    if (error instanceof NotFoundError) {
-      return res.status(404).json({ erro: error.message });
-    }
-    return res.status(400).json({ erro: error.message });
-  }
+  const produto = await productService.atualizar(id, req.body);
+  res.json(produto);
 }))
 
 // DELETE: /api/products/5
