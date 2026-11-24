@@ -26,7 +26,6 @@ class ProductService {
 
   listar() {
     return Array.from(this.#products.values())
-      .sort((a, b) => a.id - b.id)
       .map(p => p.toGetDto());
   }
 
@@ -42,7 +41,6 @@ class ProductService {
     const searchTerm = (nome || '').toLowerCase();
     return Array.from(this.#products.values())
       .filter(p => p.nome.toLowerCase().includes(searchTerm))
-      .sort((a, b) => a.id - b.id)
       .map(p => p.toGetDto());
   }
 

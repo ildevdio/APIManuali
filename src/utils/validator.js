@@ -42,6 +42,15 @@ export function isCpf(valor, campo) {
   return null;
 }
 
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+export function isUuid(valor, campo) {
+  if (typeof valor !== 'string' || !UUID_REGEX.test(valor)) {
+    return { campo, mensagem: `${campo} deve ser um UUID válido.` };
+  }
+  return null;
+}
+
 export function isPositiveInteger(valor, campo) {
   const num = Number(valor);
   if (!Number.isInteger(num) || num <= 0) {
@@ -117,6 +126,10 @@ export function validarCampo(valor, campo, regras) {
 
   if (regras.type === 'cpf') {
     return isCpf(valor, campo);
+  }
+
+  if (regras.type === 'uuid') {
+    return isUuid(valor, campo);
   }
 
   if (regras.type === 'positiveInteger') {

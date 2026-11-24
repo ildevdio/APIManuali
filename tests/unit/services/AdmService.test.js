@@ -17,7 +17,7 @@ describe('AdmService', () => {
 
     const adm = await admService.criar(dados);
 
-    expect(adm.idAdm).toBeTypeOf('number');
+    expect(adm.idAdm).toMatch(/^[0-9a-f-]{36}$/);
     expect(adm).toMatchObject({ username: dados.username, email: dados.email });
     expect(adm).not.toHaveProperty('password');
   });
@@ -60,7 +60,7 @@ describe('AdmService', () => {
   });
 
   it('buscar inexistente lança NotFoundError', () => {
-    expect(() => admService.buscarPorId(999999)).toThrow(NotFoundError);
+    expect(() => admService.buscarPorId('00000000-0000-4000-8000-000000000000')).toThrow(NotFoundError);
     expect(() => admService.buscarPorUsername('nao_existe')).toThrow(NotFoundError);
   });
 

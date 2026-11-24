@@ -1,4 +1,4 @@
-let carrinhoIdCounter = 0;
+import { randomUUID } from 'node:crypto';
 
 class CarrinhoItem {
   #idProduto;
@@ -42,7 +42,7 @@ class Carrinho {
   #atualizadoEm;
 
   constructor(usuarioId, itens = []) {
-    this.#id = ++carrinhoIdCounter;
+    this.#id = randomUUID();
     this.#usuarioId = usuarioId;
     this.#itens = new Map();
     for (const item of itens) {

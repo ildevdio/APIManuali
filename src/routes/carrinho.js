@@ -8,7 +8,7 @@ const router = express.Router();
 const schemas = {
   adicionar: {
     body: {
-      idProduto: { type: 'positiveInteger', required: true },
+      idProduto: { type: 'uuid', required: true },
       quantidade: { type: 'positiveInteger', required: true }
     }
   },
@@ -25,7 +25,7 @@ router.get('/', asyncHandler(async (req, res) => {
   if (!usuarioId) {
     return res.status(400).json({ erro: 'usuarioId é obrigatório.' });
   }
-  const carrinho = carrinhoService.obterOuCriar(parseInt(usuarioId, 10));
+  const carrinho = carrinhoService.obterOuCriar(usuarioId);
   res.json(carrinho);
 }));
 
@@ -35,7 +35,7 @@ router.get('/itens', asyncHandler(async (req, res) => {
   if (!usuarioId) {
     return res.status(400).json({ erro: 'usuarioId é obrigatório.' });
   }
-  const resultado = carrinhoService.listarItens(parseInt(usuarioId, 10));
+  const resultado = carrinhoService.listarItens(usuarioId);
   res.json(resultado);
 }));
 
@@ -46,7 +46,7 @@ router.post('/itens', validate(schemas.adicionar), asyncHandler(async (req, res)
     return res.status(400).json({ erro: 'usuarioId é obrigatório.' });
   }
   const { idProduto, quantidade } = req.body;
-  const carrinho = carrinhoService.adicionarItem(parseInt(usuarioId, 10), idProduto, quantidade);
+  const carrinho = carrinhoService.adicionarItem(usuarioId, idProduto, quantidade);
   res.json(carrinho);
 }));
 
@@ -56,9 +56,9 @@ router.put('/itens/:idProduto', validate(schemas.atualizar), asyncHandler(async 
   if (!usuarioId) {
     return res.status(400).json({ erro: 'usuarioId é obrigatório.' });
   }
-  const idProduto = parseInt(req.params.idProduto, 10);
+  const idProduto = req.params.idProduto;
   const { quantidade } = req.body;
-  const carrinho = carrinhoService.atualizarItem(parseInt(usuarioId, 10), idProduto, quantidade);
+  const carrinho = carrinhoService.atualizarItem(usuarioId, idProduto, quantidade);
   res.json(carrinho);
 }));
 
@@ -68,8 +68,8 @@ router.delete('/itens/:idProduto', asyncHandler(async (req, res) => {
   if (!usuarioId) {
     return res.status(400).json({ erro: 'usuarioId é obrigatório.' });
   }
-  const idProduto = parseInt(req.params.idProduto, 10);
-  const carrinho = carrinhoService.removerItem(parseInt(usuarioId, 10), idProduto);
+  const idProduto = req.params.idProduto;
+  const carrinho = carrinhoService.removerItem(usuarioId, idProduto);
   res.json(carrinho);
 }));
 
@@ -79,7 +79,7 @@ router.delete('/', asyncHandler(async (req, res) => {
   if (!usuarioId) {
     return res.status(400).json({ erro: 'usuarioId é obrigatório.' });
   }
-  const carrinho = carrinhoService.limpar(parseInt(usuarioId, 10));
+  const carrinho = carrinhoService.limpar(usuarioId);
   res.json(carrinho);
 }));
 
