@@ -8,7 +8,7 @@ const router = express.Router();
 const schemas = {
   criar: {
     body: {
-      produtoId: { type: 'positiveInteger', required: true },
+      produtoId: { type: 'uuid', required: true },
       nota: { type: 'positiveInteger', required: true },
       comentario: { type: 'string', required: false, max: 500 }
     }
@@ -22,20 +22,20 @@ router.post('/', validate(schemas.criar), asyncHandler(async (req, res) => {
   if (!usuarioId) {
     return res.status(400).json({ erro: 'usuarioId é obrigatório.' });
   }
-  const avaliacao = avaliacaoService.criar(produtoId, parseInt(usuarioId, 10), nota, comentario);
+  const avaliacao = avaliacaoService.criar(produtoId, usuarioId, nota, comentario);
   res.status(201).json(avaliacao);
 }));
 
 // GET: /api/avaliacoes/produto/:id
 router.get('/produto/:id', asyncHandler(async (req, res) => {
-  const produtoId = parseInt(req.params.id, 10);
+  const produtoId = req.params.id;
   const avaliacoes = avaliacaoService.listarPorProduto(produtoId);
   res.json(avaliacoes);
 }));
 
 // GET: /api/avaliacoes/media/:id
 router.get('/media/:id', asyncHandler(async (req, res) => {
-  const produtoId = parseInt(req.params.id, 10);
+  const produtoId = req.params.id;
   const stats = avaliacaoService.mediaPorProduto(produtoId);
   res.json(stats);
 }));
@@ -46,13 +46,13 @@ router.get('/usuario', asyncHandler(async (req, res) => {
   if (!usuarioId) {
     return res.status(400).json({ erro: 'usuarioId é obrigatório.' });
   }
-  const avaliacoes = avaliacaoService.listarPorUsuario(parseInt(usuarioId, 10));
+  const avaliacoes = avaliacaoService.listarPorUsuario(usuarioId);
   res.json(avaliacoes);
 }));
 
 // DELETE: /api/avaliacoes/:id
 router.delete('/:id', asyncHandler(async (req, res) => {
-  const id = parseInt(req.params.id, 10);
+  const id = req.params.id;
   avaliacaoService.deletar(id);
   res.status(204).send();
 }));

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { api, dadosUnicos, criarAdm } from '../helpers/api.js';
+import { api, ID_INEXISTENTE, dadosUnicos, criarAdm } from '../helpers/api.js';
 
 describe('Administradores — TC07 / DEF01', () => {
   it('cadastra administrador (fluxo funcional atual)', async () => {
@@ -38,7 +38,7 @@ describe('Administradores — TC07 / DEF01', () => {
   });
 
   it('admin inexistente retorna 404', async () => {
-    const res = await api.get('/api/adms/999999');
+    const res = await api.get(`/api/adms/${ID_INEXISTENTE}`);
 
     expect(res.status).toBe(404);
   });

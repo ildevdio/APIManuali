@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { api, criarProduto, aguardarEstoque, CEP_VALIDO } from '../helpers/api.js';
+import { api, ID_INEXISTENTE, criarProduto, aguardarEstoque, CEP_VALIDO } from '../helpers/api.js';
 
 describe('Pedidos e estoque — TC11, TC13 e TC14', () => {
   it('TC13: pedido reduz estoque e nova compra sem estoque retorna 409', async () => {
@@ -44,7 +44,7 @@ describe('Pedidos e estoque — TC11, TC13 e TC14', () => {
 
   it('TC11: checkout com produto inexistente retorna 404', async () => {
     const res = await api.post('/api/pedidos').send({
-      itens: [{ idProduto: 999999, quantidade: 1 }],
+      itens: [{ idProduto: ID_INEXISTENTE, quantidade: 1 }],
       cep: CEP_VALIDO
     });
 
@@ -69,7 +69,7 @@ describe('Pedidos e estoque — TC11, TC13 e TC14', () => {
     expect(porId.status).toBe(200);
     expect(porId.body.idPedido).toBe(criado.body.idPedido);
 
-    const inexistente = await api.get('/api/pedidos/999999');
+    const inexistente = await api.get(`/api/pedidos/${ID_INEXISTENTE}`);
     expect(inexistente.status).toBe(404);
   });
 

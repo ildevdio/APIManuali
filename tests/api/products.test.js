@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { api, criarProduto } from '../helpers/api.js';
+import { api, ID_INEXISTENTE, criarProduto } from '../helpers/api.js';
 
 describe('Produtos — TC06, TC08 e TC09', () => {
   it('TC06: cria produto persistindo categoria, fotos e história', async () => {
@@ -38,10 +38,16 @@ describe('Produtos — TC06, TC08 e TC09', () => {
   });
 
   it('produto inexistente retorna 404', async () => {
-    const res = await api.get('/api/products/999999');
+    const res = await api.get(`/api/products/${ID_INEXISTENTE}`);
 
     expect(res.status).toBe(404);
     expect(res.body.erro).toMatch(/não foi encontrado/);
+  });
+
+  it('id fora do formato UUID retorna 400', async () => {
+    const res = await api.get('/api/products/123');
+
+    expect(res.status).toBe(400);
   });
 
   it('filtra produtos por categoria e por ativo', async () => {

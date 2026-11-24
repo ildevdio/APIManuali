@@ -1,4 +1,4 @@
-let productIdCounter = 0;
+import { randomUUID } from 'node:crypto';
 
 class Product {
   #id;

@@ -6,7 +6,7 @@ const router = express.Router();
 
 // GET: /api/recomendacoes/relacionados/:id
 router.get('/relacionados/:id', asyncHandler(async (req, res) => {
-  const produtoId = parseInt(req.params.id, 10);
+  const produtoId = req.params.id;
   const limite = req.query.limite ? parseInt(req.query.limite, 10) : 4;
   const relacionados = recomendacaoService.produtosRelacionados(produtoId, limite);
   res.json(relacionados);

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { api, dadosUnicos, cpfUnico, criarArtesao, CEP_VALIDO } from '../helpers/api.js';
+import { api, ID_INEXISTENTE, dadosUnicos, cpfUnico, criarArtesao, CEP_VALIDO } from '../helpers/api.js';
 
 function formatarCpf(cpf) {
   return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
@@ -79,7 +79,7 @@ describe('Artesãos — TC05', () => {
   });
 
   it('artesão inexistente retorna 404', async () => {
-    const res = await api.get('/api/artesaos/999999');
+    const res = await api.get(`/api/artesaos/${ID_INEXISTENTE}`);
 
     expect(res.status).toBe(404);
   });

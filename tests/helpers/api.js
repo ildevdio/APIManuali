@@ -6,6 +6,9 @@ export const api = request(app);
 
 export const CEP_VALIDO = '12345-678';
 
+// UUID válido que nunca é gerado pelo randomUUID dos models.
+export const ID_INEXISTENTE = '00000000-0000-4000-8000-000000000000';
+
 let sequencia = 0;
 
 // Gera dados únicos para evitar colisão com o estado em memória dos services.

@@ -72,6 +72,7 @@ describe.skipIf(!process.env.DATABASE_URL)('Conexão com o banco de dados (Postg
             username: 'Teste Conexão',
             password: 'senha-teste-placeholder-nao-usar',
             email,
+            email,
             cep: '00000-000',
           },
         });
@@ -94,8 +95,9 @@ describe.skipIf(!process.env.DATABASE_URL)('Conexão com o banco de dados (Postg
       prisma.$transaction(async (tx) => {
         const user = await tx.user.create({
           data: {
-            username: 'Teste Check',
+username: 'Teste Check',
             password: 'senha-teste-placeholder-nao-usar',
+            email: `teste-check-${Date.now()}@teste.dev`,
             email: `teste-check-${Date.now()}@teste.dev`,
             cep: '00000-000',
           },
@@ -105,6 +107,7 @@ describe.skipIf(!process.env.DATABASE_URL)('Conexão com o banco de dados (Postg
           data: {
             username: 'Artesão Check',
             password: 'senha-teste-placeholder-nao-usar',
+            email: `artesao-check-${Date.now()}@teste.dev`,
             email: `artesao-check-${Date.now()}@teste.dev`,
             cep: '00000-000',
             artesao: { create: { cpf: String(Date.now()).slice(-11) } },

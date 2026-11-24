@@ -13,7 +13,7 @@ const schemas = {
   },
   buscarPorId: {
     params: {
-      id: { type: 'positiveInteger', required: true }
+      id: { type: 'uuid', required: true }
     }
   },
   criar: {
@@ -30,7 +30,7 @@ const schemas = {
   },
   atualizar: {
     params: {
-      id: { type: 'positiveInteger', required: true }
+      id: { type: 'uuid', required: true }
     },
     body: {
       username: { type: 'string', required: true, min: 3, max: 50 },
@@ -45,7 +45,7 @@ const schemas = {
   },
   deletar: {
     params: {
-      id: { type: 'positiveInteger', required: true }
+      id: { type: 'uuid', required: true }
     }
   }
 };
@@ -65,7 +65,7 @@ router.get('/search', validate(schemas.buscarPorUsername), asyncHandler(async (r
 
 // GET: /api/artesaos/5
 router.get('/:id', validate(schemas.buscarPorId), asyncHandler(async (req, res) => {
-  const id = parseInt(req.params.id, 10);
+  const id = req.params.id;
   const artesao = artesaoService.buscarPorId(id);
   res.json(artesao);
 }));
@@ -87,7 +87,7 @@ router.post('/', validate(schemas.criar), asyncHandler(async (req, res) => {
 
 // PUT: /api/artesaos/5
 router.put('/:id', validate(schemas.atualizar), asyncHandler(async (req, res) => {
-  const id = parseInt(req.params.id, 10);
+  const id = req.params.id;
   const artesao = await artesaoService.atualizar(id, {
     username: req.body.username,
     email: req.body.email,

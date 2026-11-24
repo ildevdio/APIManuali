@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { api, dadosUnicos, CEP_VALIDO } from '../helpers/api.js';
+import { api, ID_INEXISTENTE, dadosUnicos, CEP_VALIDO } from '../helpers/api.js';
 
 describe('Usuários — TC01 e TC02', () => {
   it('TC01: cria usuário e retorna 201 com os dados e Location', async () => {
@@ -69,7 +69,7 @@ describe('Usuários — TC01 e TC02', () => {
   });
 
   it('busca usuário inexistente retorna 404', async () => {
-    const res = await api.get('/api/usuarios/999999');
+    const res = await api.get(`/api/usuarios/${ID_INEXISTENTE}`);
 
     expect(res.status).toBe(404);
     expect(res.body.erro).toMatch(/não existe ou não foi localizado/);
