@@ -89,16 +89,8 @@ export function isArray(valor, campo) {
   return null;
 }
 
-export function validarCampo(valor, campo, regras) {
-  if (regras.required && (valor === undefined || valor === null || valor === '')) {
-    return { campo, mensagem: `${campo} é obrigatório.` };
-  }
-
-  if (valor === undefined || valor === null) {
-    return null;
-  }
-
-  if (regras.type === 'string') {
+const validadores = {
+  string: (valor, campo, regras) => {
     const erro = isString(valor, campo, regras);
     if (erro) return erro;
     if (regras.email) {
@@ -114,42 +106,30 @@ export function validarCampo(valor, campo, regras) {
       if (erroCpf) return erroCpf;
     }
     return null;
+  },
+  email: (valor, campo) => isEmail(valor, campo),
+  cep: (valor, campo) => isCep(valor, campo),
+  cpf: (valor, campo) => isCpf(valor, campo),
+  uuid: (valor, campo) => isUuid(valor, campo),
+  positiveInteger: (valor, campo) => isPositiveInteger(valor, campo),
+  nonNegativeInteger: (valor, campo) => isNonNegativeInteger(valor, campo),
+  positiveNumber: (valor, campo) => isPositiveNumber(valor, campo),
+  boolean: (valor, campo) => isBoolean(valor, campo),
+  array: (valor, campo) => isArray(valor, campo),
+};
+
+export function validarCampo(valor, campo, regras) {
+  if (regras.required && (valor === undefined || valor === null || valor === '')) {
+    return { campo, mensagem: `${campo} é obrigatório.` };
   }
 
-  if (regras.type === 'email') {
-    return isEmail(valor, campo);
+  if (valor === undefined || valor === null) {
+    return null;
   }
 
-  if (regras.type === 'cep') {
-    return isCep(valor, campo);
-  }
-
-  if (regras.type === 'cpf') {
-    return isCpf(valor, campo);
-  }
-
-  if (regras.type === 'uuid') {
-    return isUuid(valor, campo);
-  }
-
-  if (regras.type === 'positiveInteger') {
-    return isPositiveInteger(valor, campo);
-  }
-
-  if (regras.type === 'nonNegativeInteger') {
-    return isNonNegativeInteger(valor, campo);
-  }
-
-  if (regras.type === 'positiveNumber') {
-    return isPositiveNumber(valor, campo);
-  }
-
-  if (regras.type === 'boolean') {
-    return isBoolean(valor, campo);
-  }
-
-  if (regras.type === 'array') {
-    return isArray(valor, campo);
+  const validador = validadores[regras.type];
+  if (validador) {
+    return validador(valor, campo, regras);
   }
 
   return null;

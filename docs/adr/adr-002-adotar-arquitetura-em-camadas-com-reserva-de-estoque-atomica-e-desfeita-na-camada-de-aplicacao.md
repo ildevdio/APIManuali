@@ -1,4 +1,4 @@
-# ADR-001: Adotar arquitetura em camadas com reserva de estoque atômica e desfeita na camada de aplicação
+# ADR-002: Adotar arquitetura em camadas com reserva de estoque atômica e desfeita na camada de aplicação
 
 - **Status:** Aceita
 - **Data:** 2026-11-23

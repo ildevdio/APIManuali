@@ -1,41 +1,42 @@
 import UsuarioService from './UsuarioService.js';
 import ArtesaoService from './ArtesaoService.js';
 import AdmService from './AdmService.js';
-import { BadRequestError } from '../utils/errors.js';
+import { BadRequestError, UnauthorizedError } from '../utils/errors.js';
 
 const tokens = new Map();
 
 class AuthService {
-  async login({ username, password, tipo = 'usuario' }) {
+  login({ username, password, tipo = 'usuario' }) {
     if (!username || !password) {
       throw new BadRequestError('Username e senha são obrigatórios.');
     }
 
-    let usuario = null;
-    let papel = '';
+    const handlers = {
+      artesao: { service: ArtesaoService, papel: 'artesao' },
+      adm: { service: AdmService, papel: 'adm' },
+      usuario: { service: UsuarioService, papel: 'comprador' },
+    };
 
-    if (tipo === 'artesao') {
-      usuario = await ArtesaoService.autenticar(username, password);
-      papel = 'artesao';
-    } else if (tipo === 'adm') {
-      usuario = await AdmService.autenticar(username, password);
-      papel = 'adm';
-    } else {
-      usuario = await UsuarioService.autenticar(username, password);
+    const handler = handlers[tipo];
+    if (!handler) {
+      usuario = null;
       papel = 'comprador';
+    } else {
+      usuario = handler.service.autenticar(username, password);
+      papel = handler.papel;
     }
 
     if (!usuario) {
       throw new BadRequestError('Credenciais inválidas.');
     }
 
-    const token = `token_${papel}_${usuario.id}_${Date.now()}`;
-    tokens.set(token, { id: usuario.id, papel, username: usuario.username });
+    const token = `token_${papel}_${usuario.id ?? usuario.idAdm}_${Date.now()}`;
+    tokens.set(token, { id: usuario.id ?? usuario.idAdm, papel, username: usuario.username });
 
     return {
       token,
       usuario: {
-        id: usuario.id,
+        id: usuario.id ?? usuario.idAdm,
         username: usuario.username,
         email: usuario.email,
         papel
@@ -45,7 +46,7 @@ class AuthService {
 
   validarToken(token) {
     if (!token || !tokens.has(token)) {
-      throw new BadRequestError('Token inválido ou expirado.');
+      throw new UnauthorizedError('Token inválido ou expirado.');
     }
     return tokens.get(token);
   }
