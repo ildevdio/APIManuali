@@ -3,7 +3,6 @@ import productService from './ProductService.js';
 import { NotFoundError, BadRequestError } from '../utils/errors.js';
 
 const carrinhos = new Map();
-let carrinhoCounter = 0;
 
 class CarrinhoService {
   obterOuCriar(usuarioId) {

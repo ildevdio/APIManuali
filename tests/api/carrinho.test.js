@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll } from 'vitest';
-import { api, criarUsuario, criarProduto } from '../helpers/api.js';
+import { api, ID_INEXISTENTE, criarUsuario, criarProduto } from '../helpers/api.js';
 
 describe('Carrinho — TC10 / DEF02', () => {
   let usuarioId;
@@ -60,7 +60,7 @@ describe('Carrinho — TC10 / DEF02', () => {
   it('adicionar produto inexistente retorna 404', async () => {
     const res = await api
       .post(`/api/carrinho/itens?usuarioId=${usuarioId}`)
-      .send({ idProduto: 999999, quantidade: 1 });
+      .send({ idProduto: ID_INEXISTENTE, quantidade: 1 });
 
     expect(res.status).toBe(404);
   });

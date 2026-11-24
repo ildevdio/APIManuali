@@ -8,13 +8,13 @@ const router = express.Router();
 const schemas = {
   listar: {
     query: {
-      usuarioId: { type: 'positiveInteger', required: false },
+      usuarioId: { type: 'uuid', required: false },
       status: { type: 'string', required: false }
     }
   },
   buscarPorId: {
     params: {
-      id: { type: 'positiveInteger', required: true }
+      id: { type: 'uuid', required: true }
     }
   },
   criar: {
@@ -22,12 +22,12 @@ const schemas = {
       itens: { type: 'array', required: true },
       cep: { type: 'cep', required: true },
       endereco: { type: 'string', required: false },
-      usuarioId: { type: 'positiveInteger', required: false }
+      usuarioId: { type: 'uuid', required: false }
     }
   },
   atualizarStatus: {
     params: {
-      id: { type: 'positiveInteger', required: true }
+      id: { type: 'uuid', required: true }
     },
     body: {
       status: { type: 'string', required: true }
@@ -35,7 +35,7 @@ const schemas = {
   },
   atualizar: {
     params: {
-      id: { type: 'positiveInteger', required: true }
+      id: { type: 'uuid', required: true }
     },
     body: {
       cep: { type: 'cep', required: true },
@@ -44,7 +44,7 @@ const schemas = {
   },
   deletar: {
     params: {
-      id: { type: 'positiveInteger', required: true }
+      id: { type: 'uuid', required: true }
     }
   }
 };
@@ -55,7 +55,7 @@ router.get('/', validate(schemas.listar), asyncHandler(async (req, res) => {
   let pedidos = pedidoService.listar();
 
   if (usuarioId) {
-    const uid = parseInt(usuarioId, 10);
+    const uid = usuarioId;
     pedidos = pedidos.filter(p => p.usuarioId === uid);
   }
 
@@ -68,7 +68,7 @@ router.get('/', validate(schemas.listar), asyncHandler(async (req, res) => {
 
 // GET: /api/pedidos/5
 router.get('/:id', validate(schemas.buscarPorId), asyncHandler(async (req, res) => {
-  const id = parseInt(req.params.id, 10);
+  const id = req.params.id;
   const pedido = pedidoService.buscarPorId(id);
   res.json(pedido);
 }));
@@ -95,7 +95,7 @@ router.post('/', validate(schemas.criar), asyncHandler(async (req, res) => {
 
 // PATCH: /api/pedidos/5/status - atualizar status do pedido (artesão)
 router.patch('/:id/status', validate(schemas.atualizarStatus), asyncHandler(async (req, res) => {
-  const id = parseInt(req.params.id, 10);
+  const id = req.params.id;
   const { status } = req.body;
   const pedido = await pedidoService.atualizarStatus(id, status);
   res.json(pedido);
@@ -103,7 +103,7 @@ router.patch('/:id/status', validate(schemas.atualizarStatus), asyncHandler(asyn
 
 // PUT: /api/pedidos/5
 router.put('/:id', validate(schemas.atualizar), asyncHandler(async (req, res) => {
-  const id = parseInt(req.params.id, 10);
+  const id = req.params.id;
   const dto = req.body;
   const pedido = await pedidoService.atualizar(id, dto);
   res.json(pedido);
@@ -111,7 +111,7 @@ router.put('/:id', validate(schemas.atualizar), asyncHandler(async (req, res) =>
 
 // DELETE: /api/pedidos/5
 router.delete('/:id', validate(schemas.deletar), asyncHandler(async (req, res) => {
-  const id = parseInt(req.params.id, 10);
+  const id = req.params.id;
   await pedidoService.deletar(id);
   res.status(204).send();
 }));

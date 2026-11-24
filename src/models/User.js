@@ -1,4 +1,4 @@
-let userIdCounter = 0;
+import { randomUUID } from 'node:crypto';
 
 class User {
   #id;
@@ -8,7 +8,7 @@ class User {
   #cep;
 
   constructor(username, password, email, cep) {
-    this.#id = ++userIdCounter;
+    this.#id = randomUUID();
     this.username = username;
     this.password = password;
     this.email = email;

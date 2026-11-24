@@ -1,4 +1,4 @@
-let productIdCounter = 0;
+import { randomUUID } from 'node:crypto';
 
 class Product {
   #id;
@@ -13,7 +13,7 @@ class Product {
   #artesaoId;
 
   constructor({ nome, descricao, preco, estoque, ativo, categoria, fotos, historia, artesaoId }) {
-    this.#id = ++productIdCounter;
+    this.#id = randomUUID();
     this.nome = nome;
     this.descricao = descricao;
     this.estoque = estoque;

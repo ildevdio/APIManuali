@@ -19,7 +19,7 @@ const schemas = {
   },
   buscarPorId: {
     params: {
-      id: { type: 'positiveInteger', required: true }
+      id: { type: 'uuid', required: true }
     }
   },
   criar: {
@@ -32,12 +32,12 @@ const schemas = {
       categoria: { type: 'string', required: false, max: 100 },
       fotos: { type: 'array', required: false },
       historia: { type: 'string', required: false, max: 2000 },
-      artesaoId: { type: 'positiveInteger', required: false }
+      artesaoId: { type: 'uuid', required: false }
     }
   },
   atualizar: {
     params: {
-      id: { type: 'positiveInteger', required: true }
+      id: { type: 'uuid', required: true }
     },
     body: {
       nome: { type: 'string', required: true, min: 1, max: 100 },
@@ -48,12 +48,12 @@ const schemas = {
       categoria: { type: 'string', required: false, max: 100 },
       fotos: { type: 'array', required: false },
       historia: { type: 'string', required: false, max: 2000 },
-      artesaoId: { type: 'positiveInteger', required: false }
+      artesaoId: { type: 'uuid', required: false }
     }
   },
   deletar: {
     params: {
-      id: { type: 'positiveInteger', required: true }
+      id: { type: 'uuid', required: true }
     }
   }
 };
@@ -84,7 +84,7 @@ router.get('/search', validate(schemas.buscarPorNome), asyncHandler(async (req, 
 
 // GET: /api/products/5
 router.get('/:id', validate(schemas.buscarPorId), asyncHandler(async (req, res) => {
-  const id = parseInt(req.params.id, 10);
+  const id = req.params.id;
   const produto = productService.buscarPorId(id);
   res.json(produto);
 }));
@@ -108,7 +108,7 @@ router.post('/', validate(schemas.criar), asyncHandler(async (req, res) => {
 
 // PUT: /api/products/5
 router.put('/:id', validate(schemas.atualizar), asyncHandler(async (req, res) => {
-  const id = parseInt(req.params.id, 10);
+  const id = req.params.id;
   const dto = req.body;
   const produto = await productService.atualizar(id, {
     nome: dto.nome,
@@ -126,7 +126,7 @@ router.put('/:id', validate(schemas.atualizar), asyncHandler(async (req, res) =>
 
 // DELETE: /api/products/5
 router.delete('/:id', validate(schemas.deletar), asyncHandler(async (req, res) => {
-  const id = parseInt(req.params.id, 10);
+  const id = req.params.id;
   await productService.deletar(id);
   res.status(204).send();
 }));

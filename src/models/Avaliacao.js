@@ -1,4 +1,4 @@
-let avaliacaoIdCounter = 0;
+import { randomUUID } from 'node:crypto';
 
 class Avaliacao {
   #id;
@@ -12,7 +12,7 @@ class Avaliacao {
     if (!Number.isInteger(nota) || nota < 1 || nota > 5) {
       throw new Error('A nota deve ser um inteiro entre 1 e 5.');
     }
-    this.#id = ++avaliacaoIdCounter;
+    this.#id = randomUUID();
     this.#produtoId = produtoId;
     this.#usuarioId = usuarioId;
     this.#nota = nota;

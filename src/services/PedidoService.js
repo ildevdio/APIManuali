@@ -54,7 +54,6 @@ class PedidoService {
 
   listar() {
     return Array.from(this.#pedidos.values())
-      .sort((a, b) => a.idPedido - b.idPedido)
       .map(p => this.#toGetDto(p));
   }
 

@@ -22,6 +22,7 @@ const TABELAS_ESPERADAS = [
   'avaliacao',
   'pagamento',
   'entrega',
+  'sessao',
 ];
 
 class Rollback extends Error {}
