@@ -33,7 +33,7 @@ describe('Painel administrativo e indicadores — TC16', () => {
 
   // Defeito: routes/admin.js chama productService.listar() (async) sem await;
   // `produtos.filter` falha e a rota responde 500. Correção: `await productService.listar()`.
-  it.fails('TC16/DEF: GET /metricas/produtos retorna contagem de ativos, inativos e estoque', async () => {
+  it('TC16/DEF: GET /metricas/produtos retorna contagem de ativos, inativos e estoque', async () => {
     const res = await api.get('/api/admin/metricas/produtos');
 
     expect(res.status).toBe(200);
@@ -61,7 +61,7 @@ describe('Painel administrativo e indicadores — TC16', () => {
   });
 
   // Mesmo defeito de /metricas/produtos (productService.listar() sem await).
-  it.fails('TC16/DEF: GET /metricas/geral consolida os indicadores', async () => {
+  it('TC16/DEF: GET /metricas/geral consolida os indicadores', async () => {
     const geral = await api.get('/api/admin/metricas/geral');
     const vendas = await api.get('/api/admin/metricas/vendas');
 

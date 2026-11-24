@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 import { NotFoundError, BadRequestError, ConflictError } from '../utils/errors.js';
+import { agruparItens } from '../utils/agruparItens.js';
 
 const PRODUCT_SELECT = {
   id: true,
@@ -108,7 +109,7 @@ class ProductService {
     const products = await prisma.product.findMany({
       select: PRODUCT_SELECT,
       where: {
-        nome: { equals: nome }
+        nome: { contains: nome, mode: 'insensitive' }
       },
       orderBy: { id: 'asc' }
     });
@@ -152,16 +153,7 @@ class ProductService {
   }
 
   async reservarEstoque(itens) {
-    const agrupados = new Map();
-    for (const { idProduto, quantidade } of itens) {
-      const atual = agrupados.get(idProduto) || 0;
-      agrupados.set(idProduto, atual + quantidade);
-    }
-
-    const pedidos = Array.from(agrupados.entries()).map(([idProduto, quantidade]) => ({
-      idProduto,
-      quantidade
-    }));
+    const pedidos = agruparItens(itens);
 
     if (pedidos.some(p => p.quantidade <= 0)) {
       throw new BadRequestError('Quantidade deve ser maior que zero.');

@@ -197,7 +197,7 @@ describe('Pedidos e estoque — TC11, TC12, TC13 e TC14', () => {
   });
 
   // Defeito: o DTO do pedido não expõe `status`, então o acompanhamento não é observável.
-  it.fails('TC14/DEF: pedido deveria expor o status atualizado', async () => {
+  it('TC14/DEF: pedido deveria expor o status atualizado', async () => {
     const produto = await criarProduto({ estoque: 5 });
     const criado = await api.post('/api/pedidos').send({
       itens: [{ idProduto: produto.body.id, quantidade: 1 }],
@@ -231,6 +231,25 @@ describe('Pedidos e estoque — TC11, TC12, TC13 e TC14', () => {
     const res = await api.get(`/api/pedidos?usuarioId=${ID_INEXISTENTE}`);
     expect(res.status).toBe(200);
     expect(res.body).toEqual([]);
+  });
+
+  it('filtra pedidos por usuarioId', async () => {
+    const usuario = await criarUsuario();
+    const produto = await criarProduto({ estoque: 5 });
+    const criado = await api.post('/api/pedidos').send({
+      itens: [{ idProduto: produto.body.id, quantidade: 1 }],
+      cep: CEP_VALIDO,
+      usuarioId: usuario.body.id
+    });
+
+    expect(criado.status).toBe(201);
+
+    const filtrados = await api.get(`/api/pedidos?usuarioId=${usuario.body.id}`);
+
+    expect(filtrados.status).toBe(200);
+    expect(filtrados.body).toEqual(expect.arrayContaining([
+      expect.objectContaining({ idPedido: criado.body.idPedido, usuarioId: usuario.body.id })
+    ]));
   });
 
   it('deletar pedido não concluído devolve o estoque', async () => {
