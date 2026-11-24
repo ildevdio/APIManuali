@@ -6,7 +6,12 @@ const carrinhos = new Map();
 
 class CarrinhoService {
   #buscarCarrinho(usuarioId) {
-    return carrinhos.get(usuarioId) || new Carrinho(usuarioId);
+    let carrinho = carrinhos.get(usuarioId);
+    if (!carrinho) {
+      carrinho = new Carrinho(usuarioId);
+      carrinhos.set(usuarioId, carrinho);
+    }
+    return carrinho;
   }
 
   #validarDisponibilidade(produto, quantidade) {
