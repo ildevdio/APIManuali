@@ -71,7 +71,6 @@ class ArtesaoService {
 
   listar() {
     return Array.from(this.#artesaos.values())
-      .sort((a, b) => a.id - b.id)
       .map(a => a.toGetDto());
   }
 

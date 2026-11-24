@@ -84,7 +84,8 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: string
+            format: uuid
       responses:
         '200':
           description: Usuário encontrado
@@ -101,7 +102,8 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: string
+            format: uuid
       requestBody:
         required: true
         content:
@@ -128,7 +130,8 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: string
+            format: uuid
       responses:
         '204':
           description: Usuário deletado
@@ -192,7 +195,8 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: string
+            format: uuid
       responses:
         '200':
           description: Produto encontrado
@@ -209,7 +213,8 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: string
+            format: uuid
       requestBody:
         required: true
         content:
@@ -234,7 +239,8 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: string
+            format: uuid
       responses:
         '204':
           description: Produto deletado
@@ -281,7 +287,8 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: string
+            format: uuid
       responses:
         '200':
           description: Pedido encontrado
@@ -298,7 +305,8 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: string
+            format: uuid
       requestBody:
         required: true
         content:
@@ -323,7 +331,8 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: string
+            format: uuid
       responses:
         '204':
           description: Pedido deletado
@@ -389,7 +398,8 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: string
+            format: uuid
       responses:
         '200':
           description: Artesão encontrado
@@ -406,7 +416,8 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: string
+            format: uuid
       requestBody:
         required: true
         content:
@@ -433,7 +444,8 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: string
+            format: uuid
       responses:
         '204':
           description: Artesão deletado
@@ -499,7 +511,8 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: string
+            format: uuid
       responses:
         '200':
           description: Administrador encontrado
@@ -516,7 +529,8 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: string
+            format: uuid
       requestBody:
         required: true
         content:
@@ -543,7 +557,8 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: string
+            format: uuid
       responses:
         '204':
           description: Administrador deletado
@@ -585,7 +600,8 @@ paths:
                     type: object
                     properties:
                       id:
-                        type: integer
+                        type: string
+                        format: uuid
                       username:
                         type: string
                       email:
@@ -610,7 +626,8 @@ paths:
           in: query
           required: true
           schema:
-            type: integer
+            type: string
+            format: uuid
       responses:
         '200':
           description: Carrinho do usuário
@@ -625,7 +642,8 @@ paths:
           in: query
           required: true
           schema:
-            type: integer
+            type: string
+            format: uuid
       responses:
         '200':
           description: Carrinho limpo
@@ -642,7 +660,8 @@ paths:
           in: query
           required: true
           schema:
-            type: integer
+            type: string
+            format: uuid
       responses:
         '200':
           description: Itens do carrinho
@@ -664,7 +683,8 @@ paths:
           in: query
           required: true
           schema:
-            type: integer
+            type: string
+            format: uuid
       requestBody:
         required: true
         content:
@@ -689,12 +709,14 @@ paths:
           in: query
           required: true
           schema:
-            type: integer
+            type: string
+            format: uuid
         - name: idProduto
           in: path
           required: true
           schema:
-            type: integer
+            type: string
+            format: uuid
       requestBody:
         required: true
         content:
@@ -715,12 +737,14 @@ paths:
           in: query
           required: true
           schema:
-            type: integer
+            type: string
+            format: uuid
         - name: idProduto
           in: path
           required: true
           schema:
-            type: integer
+            type: string
+            format: uuid
       responses:
         '200':
           description: Item removido
@@ -737,7 +761,8 @@ paths:
           in: query
           required: true
           schema:
-            type: integer
+            type: string
+            format: uuid
       requestBody:
         required: true
         content:
@@ -762,7 +787,8 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: string
+            format: uuid
       responses:
         '200':
           description: Lista de avaliações
@@ -781,7 +807,8 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: string
+            format: uuid
       responses:
         '200':
           description: Média de avaliações
@@ -803,7 +830,8 @@ paths:
           in: query
           required: true
           schema:
-            type: integer
+            type: string
+            format: uuid
       responses:
         '200':
           description: Lista de avaliações
@@ -822,7 +850,8 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: string
+            format: uuid
       responses:
         '204':
           description: Avaliação deletada
@@ -835,7 +864,8 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: string
+            format: uuid
         - name: limite
           in: query
           schema:
@@ -1016,7 +1046,8 @@ components:
         - cep
       properties:
         id:
-          type: integer
+          type: string
+          format: uuid
         username:
           type: string
         email:
@@ -1031,7 +1062,8 @@ components:
       type: object
       properties:
         id:
-          type: integer
+          type: string
+          format: uuid
         username:
           type: string
         email:
@@ -1069,7 +1101,8 @@ components:
         - ativo
       properties:
         id:
-          type: integer
+          type: string
+          format: uuid
         nome:
           type: string
         descricao:
@@ -1086,7 +1119,8 @@ components:
       type: object
       properties:
         id:
-          type: integer
+          type: string
+          format: uuid
         nome:
           type: string
         preco:
@@ -1104,7 +1138,8 @@ components:
         - quantidade
       properties:
         idProduto:
-          type: integer
+          type: string
+          format: uuid
         quantidade:
           type: integer
 
@@ -1136,7 +1171,8 @@ components:
       type: object
       properties:
         idProduto:
-          type: integer
+          type: string
+          format: uuid
         quantidade:
           type: integer
         precoUnitario:
@@ -1150,7 +1186,8 @@ components:
       type: object
       properties:
         idPedido:
-          type: integer
+          type: string
+          format: uuid
         data:
           type: string
           format: date-time
@@ -1196,7 +1233,8 @@ components:
         - cpf
       properties:
         id:
-          type: integer
+          type: string
+          format: uuid
         username:
           type: string
         email:
@@ -1213,7 +1251,8 @@ components:
       type: object
       properties:
         id:
-          type: integer
+          type: string
+          format: uuid
         username:
           type: string
         email:
@@ -1243,7 +1282,8 @@ components:
         - email
       properties:
         idAdm:
-          type: integer
+          type: string
+          format: uuid
         username:
           type: string
         email:
@@ -1256,7 +1296,8 @@ components:
       type: object
       properties:
         idAdm:
-          type: integer
+          type: string
+          format: uuid
         username:
           type: string
         email:
@@ -1269,7 +1310,8 @@ components:
         - quantidade
       properties:
         idProduto:
-          type: integer
+          type: string
+          format: uuid
         quantidade:
           type: integer
 
@@ -1285,7 +1327,8 @@ components:
       type: object
       properties:
         idProduto:
-          type: integer
+          type: string
+          format: uuid
         quantidade:
           type: integer
         nome:
@@ -1301,9 +1344,11 @@ components:
       type: object
       properties:
         id:
-          type: integer
+          type: string
+          format: uuid
         usuarioId:
-          type: integer
+          type: string
+          format: uuid
         itens:
           type: array
           items:
@@ -1319,7 +1364,8 @@ components:
         - nota
       properties:
         produtoId:
-          type: integer
+          type: string
+          format: uuid
         nota:
           type: integer
           minimum: 1
@@ -1331,11 +1377,14 @@ components:
       type: object
       properties:
         id:
-          type: integer
+          type: string
+          format: uuid
         produtoId:
-          type: integer
+          type: string
+          format: uuid
         usuarioId:
-          type: integer
+          type: string
+          format: uuid
         nota:
           type: integer
         comentario:

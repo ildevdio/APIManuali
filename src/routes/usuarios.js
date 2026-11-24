@@ -6,7 +6,6 @@ import { validate } from '../middleware/validate.js';
 const router = express.Router();
 
 const schemas = {
-  listar: {},
   buscarPorUsername: {
     query: {
       username: { type: 'string', required: true, min: 1, max: 100 }
@@ -14,7 +13,7 @@ const schemas = {
   },
   buscarPorId: {
     params: {
-      id: { type: 'positiveInteger', required: true }
+      id: { type: 'uuid', required: true }
     }
   },
   criar: {
@@ -27,18 +26,17 @@ const schemas = {
   },
   atualizar: {
     params: {
-      id: { type: 'positiveInteger', required: true }
+      id: { type: 'uuid', required: true }
     },
     body: {
       username: { type: 'string', required: true, min: 3, max: 50 },
       email: { type: 'email', required: true },
-      cep: { type: 'cep', required: true },
-      password: { type: 'string', min: 6 }
+      cep: { type: 'cep', required: true }
     }
   },
   deletar: {
     params: {
-      id: { type: 'positiveInteger', required: true }
+      id: { type: 'uuid', required: true }
     }
   }
 };
@@ -58,7 +56,7 @@ router.get('/search', validate(schemas.buscarPorUsername), asyncHandler(async (r
 
 // GET: /api/usuarios/5
 router.get('/:id', validate(schemas.buscarPorId), asyncHandler(async (req, res) => {
-  const id = parseInt(req.params.id, 10);
+  const id = req.params.id;
   const usuario = usuarioService.buscarPorId(id);
   res.json(usuario);
 }));
@@ -72,7 +70,7 @@ router.post('/', validate(schemas.criar), asyncHandler(async (req, res) => {
 
 // PUT: /api/usuarios/5
 router.put('/:id', validate(schemas.atualizar), asyncHandler(async (req, res) => {
-  const id = parseInt(req.params.id, 10);
+  const id = req.params.id;
   const dto = req.body;
   const usuario = await usuarioService.atualizar(id, dto);
   res.json(usuario);
@@ -80,7 +78,7 @@ router.put('/:id', validate(schemas.atualizar), asyncHandler(async (req, res) =>
 
 // DELETE: /api/usuarios/5
 router.delete('/:id', validate(schemas.deletar), asyncHandler(async (req, res) => {
-  const id = parseInt(req.params.id, 10);
+  const id = req.params.id;
   await usuarioService.deletar(id);
   res.status(204).send();
 }));

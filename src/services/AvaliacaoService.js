@@ -1,13 +1,12 @@
 import Avaliacao from '../models/Avaliacao.js';
-import Product from '../models/Product.js';
 import productService from './ProductService.js';
 import { NotFoundError, BadRequestError } from '../utils/errors.js';
 
 const avaliacoes = new Map();
 
 class AvaliacaoService {
-  criar(produtoId, usuarioId, nota, comentario) {
-    productService.buscarPorId(produtoId);
+  async criar(produtoId, usuarioId, nota, comentario) {
+    await productService.buscarPorId(produtoId);
 
     const jaAvaliou = Array.from(avaliacoes.values()).some(
       a => a.produtoId === produtoId && a.usuarioId === usuarioId

@@ -1,6 +1,4 @@
-import ItemPedido from './ItemPedido.js';
-
-let pedidoIdCounter = 0;
+import { randomUUID } from 'node:crypto';
 
 const STATUS_PEDIDO = ['pendente', 'aprovado', 'preparado', 'enviado', 'entregue', 'cancelado'];
 
@@ -15,13 +13,13 @@ class Pedido {
   #itens;
 
   constructor(itens, data, cepPedido, usuarioId, endereco, status) {
-    const lista = Array.isArray(itens) ? [...itens] : [...itens];
+    const lista = [...itens];
 
     if (lista.length === 0) {
       throw new Error('O pedido precisa ter pelo menos um item.');
     }
 
-    this.#idPedido = ++pedidoIdCounter;
+    this.#idPedido = randomUUID();
     this.#itens = lista;
     this.data = data;
     this.cepPedido = cepPedido;
@@ -32,10 +30,6 @@ class Pedido {
 
   get idPedido() {
     return this.#idPedido;
-  }
-
-  set idPedido(value) {
-    this.#idPedido = value;
   }
 
   get data() {
