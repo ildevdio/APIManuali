@@ -35,8 +35,7 @@ function produtoToDto(produto) {
 }
 
 async function garantirCategoria(nome) {
-  if (!nome || !nome.trim()) return null;
-  const n = nome.trim();
+  const n = nome ? nome.trim() : 'sem categoria';
   return prisma.categoria.upsert({ where: { nome: n }, update: {}, create: { nome: n } });
 }
 
