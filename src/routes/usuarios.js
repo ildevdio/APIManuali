@@ -6,7 +6,6 @@ import { validate } from '../middleware/validate.js';
 const router = express.Router();
 
 const schemas = {
-  listar: {},
   buscarPorUsername: {
     query: {
       username: { type: 'string', required: true, min: 1, max: 100 }
@@ -32,8 +31,7 @@ const schemas = {
     body: {
       username: { type: 'string', required: true, min: 3, max: 50 },
       email: { type: 'email', required: true },
-      cep: { type: 'cep', required: true },
-      password: { type: 'string', min: 6 }
+      cep: { type: 'cep', required: true }
     }
   },
   deletar: {
