@@ -14,31 +14,31 @@ class CarrinhoService {
     return carrinho.toGetDto();
   }
 
-  listarItens(usuarioId) {
-    const carrinho = Array.from(carrinhos.values()).find(c => c.usuarioId === usuarioId);
-    if (!carrinho) {
-      return { itens: [], total: 0 };
-    }
-    const itensComDetalhes = carrinho.itens.map(item => {
-      try {
-        const produto = productService.buscarPorId(item.idProduto);
-        return {
-          ...item,
-          nome: produto.nome,
-          preco: produto.preco,
-          imagem: produto.fotos && produto.fotos.length > 0 ? produto.fotos[0] : null,
-          subtotal: produto.preco * item.quantidade
-        };
-      } catch (e) {
-        return { ...item, produtoNaoEncontrado: true };
-      }
-    });
-    const total = itensComDetalhes.reduce((sum, i) => sum + (i.subtotal || 0), 0);
-    return { itens: itensComDetalhes, total };
+  async listarItens(usuarioId) {
+  const carrinho = Array.from(carrinhos.values()).find(c => c.usuarioId === usuarioId);
+  if (!carrinho) {
+    return { itens: [], total: 0 };
   }
+  const itensComDetalhes = await Promise.all(carrinho.itens.map(async item => {
+    try {
+      const produto = await productService.buscarPorId(item.idProduto);
+      return {
+        ...item,
+        nome: produto.nome,
+        preco: produto.preco,
+        imagem: produto.fotos && produto.fotos.length > 0 ? produto.fotos[0] : null,
+        subtotal: produto.preco * item.quantidade
+      };
+    } catch (e) {
+      return { ...item, produtoNaoEncontrado: true };
+    }
+  }));
+  const total = itensComDetalhes.reduce((sum, i) => sum + (i.subtotal || 0), 0);
+  return { itens: itensComDetalhes, total };
+}
 
-  adicionarItem(usuarioId, idProduto, quantidade) {
-    const produto = productService.buscarPorId(idProduto);
+  async adicionarItem(usuarioId, idProduto, quantidade) {
+    const produto = await productService.buscarPorId(idProduto);
     if (!produto.ativo) {
       throw new BadRequestError(`O produto '${produto.nome}' está inativo.`);
     }
@@ -63,13 +63,13 @@ class CarrinhoService {
     return carrinho.toGetDto();
   }
 
-  atualizarItem(usuarioId, idProduto, quantidade) {
+  async atualizarItem(usuarioId, idProduto, quantidade) {
     const carrinho = Array.from(carrinhos.values()).find(c => c.usuarioId === usuarioId);
     if (!carrinho) {
       throw new NotFoundError('Carrinho não encontrado.');
     }
 
-    const produto = productService.buscarPorId(idProduto);
+    const produto = await productService.buscarPorId(idProduto);
     if (!produto.ativo) {
       throw new BadRequestError(`O produto '${produto.nome}' está inativo.`);
     }

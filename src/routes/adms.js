@@ -75,7 +75,7 @@ router.put('/:id', validate(schemas.atualizar), asyncHandler(async (req, res) =>
 
 // DELETE: /api/adms/5
 router.delete('/:id', validate(schemas.deletar), asyncHandler(async (req, res) => {
-  const id = parseInt(req.params.id, 10);
+  const id = req.params.id;
   await admService.deletar(id);
   res.status(204).send();
 }));
