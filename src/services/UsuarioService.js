@@ -56,7 +56,6 @@ class UsuarioService {
 
   listar() {
     return Array.from(this.#usuarios.values())
-      .sort((a, b) => a.id - b.id)
       .map(u => u.toGetDto());
   }
 
