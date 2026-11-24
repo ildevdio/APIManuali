@@ -1,22 +1,30 @@
 import productService from './ProductService.js';
 import AvaliacaoService from './AvaliacaoService.js';
 
-class RecomendacaoService {
-  produtosRelacionados(produtoId, limite = 4) {
-    const produto = productService.buscarPorId(produtoId);
-    const todos = productService.listar();
+function embaralhar(array) {
+  const resultado = [...array];
 
-    const relacionados = todos
-      .filter(p => p.id !== produtoId && p.ativo)
-      .filter(p => p.categoria && p.categoria === produto.categoria)
-      .sort(() => Math.random() - 0.5)
-      .slice(0, limite);
-
-    return relacionados;
+  for (let i = resultado.length - 1; i > 0; i--) {
+    const indiceAleatorio = Math.floor(Math.random() * (i + 1));
+    [resultado[i], resultado[indiceAleatorio]] = [resultado[indiceAleatorio], resultado[i]];
   }
 
-  maisAvaliados(limite = 5) {
-    const todos = productService.listar().filter(p => p.ativo);
+  return resultado;
+}
+
+class RecomendacaoService {
+  async produtosRelacionados(produtoId, limite = 4) {
+    const produto = await productService.buscarPorId(produtoId);
+    const todos = await productService.listar();
+
+    return embaralhar(todos
+      .filter(p => p.id !== produtoId && p.ativo)
+      .filter(p => p.categoria && p.categoria === produto.categoria))
+      .slice(0, limite);
+  }
+
+  async maisAvaliados(limite = 5) {
+    const todos = (await productService.listar()).filter(p => p.ativo);
     const comAvaliacoes = todos.map(p => {
       const stats = AvaliacaoService.mediaPorProduto(p.id);
       return { ...p, ...stats };
@@ -27,8 +35,9 @@ class RecomendacaoService {
       .slice(0, limite);
   }
 
-  emDestaque(limite = 8) {
-    return productService.listar()
+  async emDestaque(limite = 8) {
+    const todos = await productService.listar();
+    return todos
       .filter(p => p.ativo && p.estoque > 0)
       .slice(0, limite);
   }
