@@ -51,7 +51,6 @@ class AdmService {
 
   listar() {
     return Array.from(this.#adms.values())
-      .sort((a, b) => a.idAdm - b.idAdm)
       .map(a => a.toGetDto());
   }
 

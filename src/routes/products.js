@@ -1,6 +1,7 @@
 import express from 'express';
 import productService from '../services/ProductService.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
+import { NotFoundError } from '../utils/errors.js';
 import { validate } from '../middleware/validate.js';
 
 const router = express.Router();
@@ -19,7 +20,7 @@ const schemas = {
   },
   buscarPorId: {
     params: {
-      id: { type: 'positiveInteger', required: true }
+      id: { type: 'uuid', required: true }
     }
   },
   criar: {
@@ -32,12 +33,12 @@ const schemas = {
       categoria: { type: 'string', required: false, max: 100 },
       fotos: { type: 'array', required: false },
       historia: { type: 'string', required: false, max: 2000 },
-      artesaoId: { type: 'positiveInteger', required: false }
+      artesaoId: { type: 'uuid', required: false }
     }
   },
   atualizar: {
     params: {
-      id: { type: 'positiveInteger', required: true }
+      id: { type: 'uuid', required: true }
     },
     body: {
       nome: { type: 'string', required: true, min: 1, max: 100 },
@@ -48,12 +49,12 @@ const schemas = {
       categoria: { type: 'string', required: false, max: 100 },
       fotos: { type: 'array', required: false },
       historia: { type: 'string', required: false, max: 2000 },
-      artesaoId: { type: 'positiveInteger', required: false }
+      artesaoId: { type: 'uuid', required: false }
     }
   },
   deletar: {
     params: {
-      id: { type: 'positiveInteger', required: true }
+      id: { type: 'uuid', required: true }
     }
   }
 };
@@ -61,10 +62,10 @@ const schemas = {
 // GET: /api/products
 router.get('/', asyncHandler(async (req, res) => {
   const { categoria, ativo } = req.query;
-  let produtos = productService.listar();
+  let produtos = await productService.listar();
 
   if (categoria) {
-    produtos = produtos.filter(p => p.categoria && p.categoria.toLowerCase() === categoria.toLowerCase());
+    produtos = produtos.filter(p => p.categoria && p.categoria.toLowerCase().includes(categoria.toLowerCase()));
   }
 
   if (ativo !== undefined) {
@@ -78,21 +79,32 @@ router.get('/', asyncHandler(async (req, res) => {
 // GET: /api/products/search?nome=caneca
 router.get('/search', validate(schemas.buscarPorNome), asyncHandler(async (req, res) => {
   const { nome } = req.query;
-  const produtos = productService.buscarPorNome(nome);
+  let produtos = productService.buscarPorNome(nome);
+  // Ensure produtos is always an array
+  if (!Array.isArray(produtos)) {
+    produtos = [];
+  }
   res.json(produtos);
-}));
+}))
 
 // GET: /api/products/5
 router.get('/:id', validate(schemas.buscarPorId), asyncHandler(async (req, res) => {
-  const id = parseInt(req.params.id, 10);
-  const produto = productService.buscarPorId(id);
-  res.json(produto);
-}));
+  const id = req.params.id;
+  try {
+    const produto = await productService.buscarPorId(id);
+    res.json(produto);
+  } catch (error) {
+    if (error instanceof NotFoundError) {
+      return res.status(404).json({ erro: error.message });
+    }
+    return res.status(400).json({ erro: error.message });
+  }
+}))
 
 // POST: /api/products
 router.post('/', validate(schemas.criar), asyncHandler(async (req, res) => {
   const dto = req.body;
-  const produto = productService.criar({
+  const produto = await productService.criar({
     nome: dto.nome,
     descricao: dto.descricao,
     preco: dto.preco,
@@ -104,31 +116,38 @@ router.post('/', validate(schemas.criar), asyncHandler(async (req, res) => {
     artesaoId: dto.artesaoId
   });
   res.status(201).location(`/api/products/${produto.id}`).json(produto);
-}));
+}))
 
 // PUT: /api/products/5
 router.put('/:id', validate(schemas.atualizar), asyncHandler(async (req, res) => {
-  const id = parseInt(req.params.id, 10);
+  const id = req.params.id;
   const dto = req.body;
-  const produto = await productService.atualizar(id, {
-    nome: dto.nome,
-    descricao: dto.descricao,
-    preco: dto.preco,
-    estoque: dto.estoque,
-    ativo: dto.ativo,
-    categoria: dto.categoria,
-    fotos: dto.fotos,
-    historia: dto.historia,
-    artesaoId: dto.artesaoId
-  });
-  res.json(produto);
-}));
+  try {
+    const produto = await productService.atualizar(id, {
+      nome: dto.nome,
+      descricao: dto.descricao,
+      preco: dto.preco,
+      estoque: dto.estoque,
+      ativo: dto.ativo,
+      categoria: dto.categoria,
+      fotos: dto.fotos,
+      historia: dto.historia,
+      artesaoId: dto.artesaoId
+    });
+    res.json(produto);
+  } catch (error) {
+    if (error instanceof NotFoundError) {
+      return res.status(404).json({ erro: error.message });
+    }
+    return res.status(400).json({ erro: error.message });
+  }
+}))
 
 // DELETE: /api/products/5
 router.delete('/:id', validate(schemas.deletar), asyncHandler(async (req, res) => {
-  const id = parseInt(req.params.id, 10);
+  const id = req.params.id;
   await productService.deletar(id);
   res.status(204).send();
-}));
+}))
 
 export default router;

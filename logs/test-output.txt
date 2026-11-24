@@ -1,0 +1,531 @@
+
+ RUN  v4.1.12 C:/Users/geral/Desktop/Projetos/FACULDADE/MANUALI/APIManuali
+
+ ÔØ» tests/api/products.test.js (9 tests | 7 failed) 981ms
+     ├ù TC06: cria produto persistindo categoria, fotos e hist├│ria 256ms
+     ├ù TC08: listagem retorna o produto cadastrado 113ms
+     ├ù TC09: consulta por id retorna os dados do produto 116ms
+     ├ù produto inexistente retorna 404 39ms
+     Ô£ô id fora do formato UUID retorna 400 17ms
+     ├ù filtra produtos por categoria e por ativo 92ms
+     ├ù busca produtos por nome 106ms
+     Ô£ô pre├ºo inv├ílido ├® rejeitado com 400 114ms
+     ├ù atualiza e remove produto 110ms
+ ÔØ» tests/api/pedidos.test.js (6 tests | 4 failed) 1156ms
+     ├ù TC13: pedido reduz estoque e nova compra sem estoque retorna 409 228ms
+     ├ù TC11: checkout com estoque insuficiente ├® bloqueado com 409 69ms
+     Ô£ô TC11: checkout com produto inexistente retorna 404  646ms
+     ├ù TC14: lista e busca pedidos; id inexistente retorna 404 36ms
+     ├ù deletar pedido n├úo conclu├¡do devolve o estoque 101ms
+     Ô£ô pedido sem itens retorna 400 67ms
+ ÔØ» tests/api/carrinho.test.js (7 tests | 6 failed) 1218ms
+     ├ù adiciona item ao carrinho 97ms
+     ├ù lista itens com detalhes e subtotal 165ms
+     ├ù atualiza a quantidade de um item 105ms
+     ├ù remove item do carrinho 58ms
+     ├ù adicionar produto inexistente retorna 404 53ms
+     Ô£ô requisi├º├úo sem usuarioId retorna 400 67ms
+     ├ù limpa o carrinho 100ms
+ Ô£ô tests/unit/services/AdmService.test.js (10 tests) 3441ms
+     Ô£ô rejeita username duplicado com ConflictError  416ms
+     Ô£ô rejeita e-mail duplicado com ConflictError  379ms
+     Ô£ô autentica com senha correta e retorna null com senha errada  669ms
+     Ô£ô atualiza dados e senha  775ms
+     Ô£ô permite atualizar mantendo o pr├│prio username/e-mail  515ms
+ ÔØ» tests/api/avaliacoes.test.js (6 tests | 4 failed) 2451ms
+     ├ù cria avalia├º├úo e lista por produto com usu├írio, nota e coment├írio 637ms
+     ├ù calcula a m├®dia das avalia├º├Áes do produto 1030ms
+     Ô£ô produto sem avalia├º├Áes retorna lista vazia 96ms
+     ├ù avalia├º├úo duplicada do mesmo usu├írio retorna 400 291ms
+     Ô£ô nota inv├ílida retorna 400  337ms
+     ├ù avalia├º├úo sem usuarioId retorna 400 52ms
+ ÔØ» tests/api/usuarios.test.js (7 tests | 1 failed) 2580ms
+     Ô£ô TC01: cria usu├írio e retorna 201 com os dados e Location  658ms
+     Ô£ô TC02: campos obrigat├│rios vazios retornam 400 com detalhes 30ms
+     Ô£ô TC02/DEF04: cadastro duplicado retorna 409 (username/e-mail j├í em uso)  560ms
+     Ô£ô lista usu├írios cadastrados 297ms
+     Ô£ô busca usu├írio por id e por username  428ms
+     Ô£ô busca usu├írio inexistente retorna 404 21ms
+     ├ù atualiza e remove usu├írio 577ms
+ Ô£ô tests/db/conexao.test.js (5 tests) 555ms
+ Ô£ô tests/api/health.test.js (2 tests) 151ms
+ Ô£ô tests/unit/validator.test.js (15 tests) 25ms
+ Ô£ô tests/unit/errors.test.js (5 tests) 19ms
+ Ô£ô tests/api/auth.test.js (6 tests) 3950ms
+     Ô£ô TC03: login com credenciais v├ílidas retorna 200, token e papel comprador  1157ms
+     Ô£ô TC04: senha incorreta retorna 400 com "Credenciais inv├ílidas."  650ms
+     Ô£ô login de artes├úo retorna papel artesao  584ms
+     Ô£ô login de administrador retorna papel adm  501ms
+     Ô£ô logout invalida o token  1026ms
+ Ô£ô tests/api/adms.test.js (4 tests) 824ms
+     Ô£ô cadastra administrador (fluxo funcional atual)  370ms
+ Ô£ô tests/api/artesaos.test.js (5 tests) 1042ms
+     Ô£ô TC05: cria artes├úo e retorna 201 com id, CPF normalizado e perfil  374ms
+     Ô£ô artes├úo duplicado (username) retorna 409  368ms
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ» Failed Tests 22 ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»
+
+ FAIL  tests/api/avaliacoes.test.js > Avalia├º├Áes ÔÇö TC15 / DEF03 > cria avalia├º├úo e lista por produto com usu├írio, nota e coment├írio
+AssertionError: expected 400 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 400
+
+ ÔØ» tests/api/avaliacoes.test.js:15:27
+     13|       .send({ produtoId, nota: 5, comentario: 'Excelente' });
+     14|
+     15|     expect(criada.status).toBe(201);
+       |                           ^
+     16|     expect(criada.body).toMatchObject({ produtoId, usuarioId, nota: 5,ÔÇª
+     17|
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[1/22]ÔÄ»
+
+ FAIL  tests/api/avaliacoes.test.js > Avalia├º├Áes ÔÇö TC15 / DEF03 > calcula a m├®dia das avalia├º├Áes do produto
+AssertionError: expected { media: +0, total: +0 } to deeply equal { media: 3, total: 2 }
+
+- Expected
++ Received
+
+  {
+-   "media": 3,
+-   "total": 2,
++   "media": 0,
++   "total": 0,
+  }
+
+ ÔØ» tests/api/avaliacoes.test.js:41:22
+     39|
+     40|     expect(res.status).toBe(200);
+     41|     expect(res.body).toEqual({ media: 3, total: 2 });
+       |                      ^
+     42|   });
+     43|
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[2/22]ÔÄ»
+
+ FAIL  tests/api/avaliacoes.test.js > Avalia├º├Áes ÔÇö TC15 / DEF03 > avalia├º├úo duplicada do mesmo usu├írio retorna 400
+AssertionError: expected 400 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 400
+
+ ÔØ» tests/api/avaliacoes.test.js:60:29
+     58|
+     59|     const primeira = await api.post(`/api/avaliacoes?usuarioId=${usuarÔÇª
+     60|     expect(primeira.status).toBe(201);
+       |                             ^
+     61|
+     62|     const segunda = await api.post(`/api/avaliacoes?usuarioId=${usuariÔÇª
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[3/22]ÔÄ»
+
+ FAIL  tests/api/avaliacoes.test.js > Avalia├º├Áes ÔÇö TC15 / DEF03 > avalia├º├úo sem usuarioId retorna 400
+AssertionError: expected 'Erro de valida├º├úo.' to be 'usuarioId ├® obrigat├│rio.' // Object.is equality
+
+Expected: "usuarioId ├® obrigat├│rio."
+Received: "Erro de valida├º├úo."
+
+ ÔØ» tests/api/avaliacoes.test.js:86:27
+     84|
+     85|     expect(res.status).toBe(400);
+     86|     expect(res.body.erro).toBe('usuarioId ├® obrigat├│rio.');
+       |                           ^
+     87|   });
+     88| });
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[4/22]ÔÄ»
+
+ FAIL  tests/api/carrinho.test.js > Carrinho ÔÇö TC10 / DEF02 > adiciona item ao carrinho
+AssertionError: expected 400 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 400
+
+ ÔØ» tests/api/carrinho.test.js:25:24
+     23|       .send({ idProduto: produtoId, quantidade: 2 });
+     24|
+     25|     expect(res.status).toBe(200);
+       |                        ^
+     26|     expect(res.body.usuarioId).toBe(usuarioId);
+     27|     expect(res.body.itens).toContainEqual({ idProduto: produtoId, quanÔÇª
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[5/22]ÔÄ»
+
+ FAIL  tests/api/carrinho.test.js > Carrinho ÔÇö TC10 / DEF02 > lista itens com detalhes e subtotal
+AssertionError: expected [] to have a length of 1 but got +0
+
+- Expected
++ Received
+
+- 1
++ 0
+
+ ÔØ» tests/api/carrinho.test.js:34:28
+     32|
+     33|     expect(res.status).toBe(200);
+     34|     expect(res.body.itens).toHaveLength(1);
+       |                            ^
+     35|     expect(res.body.itens[0]).toMatchObject({
+     36|       idProduto: produtoId,
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[6/22]ÔÄ»
+
+ FAIL  tests/api/carrinho.test.js > Carrinho ÔÇö TC10 / DEF02 > atualiza a quantidade de um item
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ÔØ» tests/api/carrinho.test.js:49:24
+     47|       .send({ quantidade: 3 });
+     48|
+     49|     expect(res.status).toBe(200);
+       |                        ^
+     50|     expect(res.body.itens).toContainEqual({ idProduto: produtoId, quanÔÇª
+     51|   });
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[7/22]ÔÄ»
+
+ FAIL  tests/api/carrinho.test.js > Carrinho ÔÇö TC10 / DEF02 > remove item do carrinho
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ÔØ» tests/api/carrinho.test.js:56:24
+     54|     const res = await api.delete(`/api/carrinho/itens/${produtoId}?usuÔÇª
+     55|
+     56|     expect(res.status).toBe(200);
+       |                        ^
+     57|     expect(res.body.itens).toEqual([]);
+     58|   });
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[8/22]ÔÄ»
+
+ FAIL  tests/api/carrinho.test.js > Carrinho ÔÇö TC10 / DEF02 > adicionar produto inexistente retorna 404
+AssertionError: expected 400 to be 404 // Object.is equality
+
+- Expected
++ Received
+
+- 404
++ 400
+
+ ÔØ» tests/api/carrinho.test.js:65:24
+     63|       .send({ idProduto: ID_INEXISTENTE, quantidade: 1 });
+     64|
+     65|     expect(res.status).toBe(404);
+       |                        ^
+     66|   });
+     67|
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[9/22]ÔÄ»
+
+ FAIL  tests/api/carrinho.test.js > Carrinho ÔÇö TC10 / DEF02 > limpa o carrinho
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ÔØ» tests/api/carrinho.test.js:80:24
+     78|     const res = await api.delete(`/api/carrinho?usuarioId=${usuarioId}ÔÇª
+     79|
+     80|     expect(res.status).toBe(200);
+       |                        ^
+     81|     expect(res.body.itens).toEqual([]);
+     82|   });
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[10/22]ÔÄ»
+
+ FAIL  tests/api/pedidos.test.js > Pedidos e estoque ÔÇö TC11, TC13 e TC14 > TC13: pedido reduz estoque e nova compra sem estoque retorna 409
+AssertionError: expected 400 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 400
+
+ ÔØ» tests/api/pedidos.test.js:14:29
+     12|     });
+     13|
+     14|     expect(primeiro.status).toBe(201);
+       |                             ^
+     15|     expect(primeiro.body.total).toBe(30);
+     16|     expect(primeiro.body.itens[0]).toMatchObject({ idProduto, quantidaÔÇª
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[11/22]ÔÄ»
+
+ FAIL  tests/api/pedidos.test.js > Pedidos e estoque ÔÇö TC11, TC13 e TC14 > TC11: checkout com estoque insuficiente ├® bloqueado com 409
+AssertionError: expected 400 to be 409 // Object.is equality
+
+- Expected
++ Received
+
+- 409
++ 400
+
+ ÔØ» tests/api/pedidos.test.js:41:24
+     39|     });
+     40|
+     41|     expect(res.status).toBe(409);
+       |                        ^
+     42|     expect(res.body.erro).toMatch(/Estoque insuficiente/);
+     43|   });
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[12/22]ÔÄ»
+
+ FAIL  tests/api/pedidos.test.js > Pedidos e estoque ÔÇö TC11, TC13 e TC14 > TC14: lista e busca pedidos; id inexistente retorna 404
+AssertionError: expected 400 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 400
+
+ ÔØ» tests/api/pedidos.test.js:62:27
+     60|       cep: CEP_VALIDO
+     61|     });
+     62|     expect(criado.status).toBe(201);
+       |                           ^
+     63|
+     64|     const lista = await api.get('/api/pedidos');
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[13/22]ÔÄ»
+
+ FAIL  tests/api/pedidos.test.js > Pedidos e estoque ÔÇö TC11, TC13 e TC14 > deletar pedido n├úo conclu├¡do devolve o estoque
+AssertionError: expected 400 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 400
+
+ ÔØ» tests/api/pedidos.test.js:83:27
+     81|       cep: CEP_VALIDO
+     82|     });
+     83|     expect(criado.status).toBe(201);
+       |                           ^
+     84|
+     85|     const reservado = await api.get(`/api/products/${produto.body.id}`ÔÇª
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[14/22]ÔÄ»
+
+ FAIL  tests/api/products.test.js > Produtos ÔÇö TC06, TC08 e TC09 > TC06: cria produto persistindo categoria, fotos e hist├│ria
+AssertionError: expected {} to match object { categoria: 'ceramica', ÔÇª(3) }
+
+- Expected
++ Received
+
+- {
+-   "ativo": true,
+-   "categoria": "ceramica",
+-   "estoque": 10,
+-   "historia": "Hist├│ria de teste",
+- }
++ {}
+
+ ÔØ» tests/api/products.test.js:10:22
+      8|     expect(res.status).toBe(201);
+      9|     expect(res.headers.location).toBe(`/api/products/${res.body.id}`);
+     10|     expect(res.body).toMatchObject({
+       |                      ^
+     11|       categoria: 'ceramica',
+     12|       historia: 'Hist├│ria de teste',
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[15/22]ÔÄ»
+
+ FAIL  tests/api/products.test.js > Produtos ÔÇö TC06, TC08 e TC09 > TC08: listagem retorna o produto cadastrado
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ÔØ» tests/api/products.test.js:25:37
+     23|
+     24|     expect(res.status).toBe(200);
+     25|     expect(Array.isArray(res.body)).toBe(true);
+       |                                     ^
+     26|     expect(res.body.some((produto) => produto.id === criado.body.id)).ÔÇª
+     27|   });
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[16/22]ÔÄ»
+
+ FAIL  tests/api/products.test.js > Produtos ÔÇö TC06, TC08 e TC09 > TC09: consulta por id retorna os dados do produto
+AssertionError: expected 400 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 400
+
+ ÔØ» tests/api/products.test.js:34:24
+     32|     const res = await api.get(`/api/products/${criado.body.id}`);
+     33|
+     34|     expect(res.status).toBe(200);
+       |                        ^
+     35|     expect(res.body.id).toBe(criado.body.id);
+     36|     expect(res.body.nome).toBe(criado.body.nome);
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[17/22]ÔÄ»
+
+ FAIL  tests/api/products.test.js > Produtos ÔÇö TC06, TC08 e TC09 > produto inexistente retorna 404
+AssertionError: expected 200 to be 404 // Object.is equality
+
+- Expected
++ Received
+
+- 404
++ 200
+
+ ÔØ» tests/api/products.test.js:43:24
+     41|     const res = await api.get(`/api/products/${ID_INEXISTENTE}`);
+     42|
+     43|     expect(res.status).toBe(404);
+       |                        ^
+     44|     expect(res.body.erro).toMatch(/n├úo foi encontrado/);
+     45|   });
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[18/22]ÔÄ»
+
+ FAIL  tests/api/products.test.js > Produtos ÔÇö TC06, TC08 e TC09 > filtra produtos por categoria e por ativo
+AssertionError: expected 500 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 500
+
+ ÔØ» tests/api/products.test.js:57:33
+     55|
+     56|     const porCategoria = await api.get('/api/products?categoria=bordadÔÇª
+     57|     expect(porCategoria.status).toBe(200);
+       |                                 ^
+     58|     expect(porCategoria.body.every((produto) => produto.categoria === ÔÇª
+     59|     expect(porCategoria.body.some((produto) => produto.id === criado.bÔÇª
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[19/22]ÔÄ»
+
+ FAIL  tests/api/products.test.js > Produtos ÔÇö TC06, TC08 e TC09 > busca produtos por nome
+TypeError: res.body.some is not a function
+ ÔØ» tests/api/products.test.js:72:21
+     70|
+     71|     expect(res.status).toBe(200);
+     72|     expect(res.body.some((produto) => produto.id === criado.body.id)).ÔÇª
+       |                     ^
+     73|   });
+     74|
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[20/22]ÔÄ»
+
+ FAIL  tests/api/products.test.js > Produtos ÔÇö TC06, TC08 e TC09 > atualiza e remove produto
+AssertionError: expected 400 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 400
+
+ ÔØ» tests/api/products.test.js:96:31
+     94|     });
+     95|
+     96|     expect(atualizado.status).toBe(200);
+       |                               ^
+     97|     expect(atualizado.body).toMatchObject({ nome: 'Produto Atualizado'ÔÇª
+     98|
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[21/22]ÔÄ»
+
+ FAIL  tests/api/usuarios.test.js > Usu├írios ÔÇö TC01 e TC02 > atualiza e remove usu├írio
+AssertionError: expected 404 to be 204 // Object.is equality
+
+- Expected
++ Received
+
+- 204
++ 404
+
+ ÔØ» tests/api/usuarios.test.js:94:29
+     92|
+     93|     const removido = await api.delete(`/api/usuarios/${criado.body.id}ÔÇª
+     94|     expect(removido.status).toBe(204);
+       |                             ^
+     95|
+     96|     const busca = await api.get(`/api/usuarios/${criado.body.id}`);
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[22/22]ÔÄ»
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ» Unhandled Errors ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»
+
+Vitest caught 2 unhandled errors during the test run.
+This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ» Unhandled Rejection ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»
+NotFoundError: Produto com Id 00000000-0000-4000-8000-000000000000 n├úo foi encontrado...
+ ÔØ» ProductService.buscarPorId src/services/ProductService.js:106:13
+    104|     });
+    105|     if (!produto) {
+    106|       throw new NotFoundError(`Produto com Id ${id} n├úo foi encontradoÔÇª
+       |             ^
+    107|     }
+    108|     return produtoToDto(produto);
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»
+Serialized Error: { statusCode: 404 }
+This error originated in "tests/api/products.test.js" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "id fora do formato UUID retorna 400". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ» Unhandled Rejection ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»
+NotFoundError: Produto com Id 00000000-0000-4000-8000-000000000000 n├úo foi encontrado...
+ ÔØ» ProductService.buscarPorId src/services/ProductService.js:106:13
+    104|     });
+    105|     if (!produto) {
+    106|       throw new NotFoundError(`Produto com Id ${id} n├úo foi encontradoÔÇª
+       |             ^
+    107|     }
+    108|     return produtoToDto(produto);
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»
+Serialized Error: { statusCode: 404 }
+This error originated in "tests/api/carrinho.test.js" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "requisi├º├úo sem usuarioId retorna 400". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»
+
+
+ Test Files  5 failed | 8 passed (13)
+      Tests  22 failed | 64 passed | 1 expected fail (87)
+     Errors  2 errors
+   Start at  16:34:42
+   Duration  8.33s (transform 8.60s, setup 0ms, import 21.31s, tests 18.39s, environment 7ms)
+

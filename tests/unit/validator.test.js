@@ -106,5 +106,11 @@ describe('validator.js', () => {
       expect(validarCampo(10, 'preco', { type: 'positiveNumber' })).toBeNull();
       expect(validarCampo(-1, 'preco', { type: 'positiveNumber' })).toMatchObject({ campo: 'preco' });
     });
+
+    it('valida uuid', () => {
+      expect(validarCampo('3f2b8c1e-9a4d-4e6f-8b7a-1c2d3e4f5a6b', 'id', { type: 'uuid' })).toBeNull();
+      expect(validarCampo('123', 'id', { type: 'uuid' })).toMatchObject({ campo: 'id' });
+      expect(validarCampo(123, 'id', { type: 'uuid' })).toMatchObject({ campo: 'id' });
+    });
   });
 });
