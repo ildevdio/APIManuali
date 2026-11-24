@@ -22,7 +22,7 @@ router.post('/', validate(schemas.criar), asyncHandler(async (req, res) => {
   if (!usuarioId) {
     return res.status(400).json({ erro: 'usuarioId é obrigatório.' });
   }
-  const avaliacao = avaliacaoService.criar(produtoId, usuarioId, nota, comentario);
+  const avaliacao = await avaliacaoService.criar(produtoId, usuarioId, nota, comentario);  
   res.status(201).json(avaliacao);
 }));
 

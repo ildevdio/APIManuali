@@ -35,7 +35,7 @@ router.get('/itens', asyncHandler(async (req, res) => {
   if (!usuarioId) {
     return res.status(400).json({ erro: 'usuarioId é obrigatório.' });
   }
-  const resultado = carrinhoService.listarItens(usuarioId);
+  const resultado = await carrinhoService.listarItens(usuarioId);
   res.json(resultado);
 }));
 
@@ -46,7 +46,7 @@ router.post('/itens', validate(schemas.adicionar), asyncHandler(async (req, res)
     return res.status(400).json({ erro: 'usuarioId é obrigatório.' });
   }
   const { idProduto, quantidade } = req.body;
-  const carrinho = carrinhoService.adicionarItem(usuarioId, idProduto, quantidade);
+  const carrinho = await carrinhoService.adicionarItem(usuarioId, idProduto, quantidade);
   res.json(carrinho);
 }));
 
@@ -58,7 +58,7 @@ router.put('/itens/:idProduto', validate(schemas.atualizar), asyncHandler(async 
   }
   const idProduto = req.params.idProduto;
   const { quantidade } = req.body;
-  const carrinho = carrinhoService.atualizarItem(usuarioId, idProduto, quantidade);
+  const carrinho = await carrinhoService.atualizarItem(usuarioId, idProduto, quantidade);
   res.json(carrinho);
 }));
 

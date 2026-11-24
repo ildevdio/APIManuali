@@ -61,7 +61,7 @@ const schemas = {
 // GET: /api/products
 router.get('/', asyncHandler(async (req, res) => {
   const { categoria, ativo } = req.query;
-  let produtos = productService.listar();
+  let produtos = await productService.listar();
 
   if (categoria) {
     produtos = produtos.filter(p => p.categoria && p.categoria.toLowerCase() === categoria.toLowerCase());
@@ -78,21 +78,21 @@ router.get('/', asyncHandler(async (req, res) => {
 // GET: /api/products/search?nome=caneca
 router.get('/search', validate(schemas.buscarPorNome), asyncHandler(async (req, res) => {
   const { nome } = req.query;
-  const produtos = productService.buscarPorNome(nome);
+  const produtos = await productService.buscarPorNome(nome);
   res.json(produtos);
 }));
 
 // GET: /api/products/5
 router.get('/:id', validate(schemas.buscarPorId), asyncHandler(async (req, res) => {
   const id = req.params.id;
-  const produto = productService.buscarPorId(id);
+  const produto = await productService.buscarPorId(id);
   res.json(produto);
 }));
 
 // POST: /api/products
 router.post('/', validate(schemas.criar), asyncHandler(async (req, res) => {
   const dto = req.body;
-  const produto = productService.criar({
+  const produto = await productService.criar({
     nome: dto.nome,
     descricao: dto.descricao,
     preco: dto.preco,

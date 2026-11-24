@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { api, ID_INEXISTENTE, criarProduto, aguardarEstoque, CEP_VALIDO } from '../helpers/api.js';
+import { api, ID_INEXISTENTE, criarProduto, criarUsuario, aguardarEstoque, CEP_VALIDO } from '../helpers/api.js';
 
-describe('Pedidos e estoque — TC11, TC13 e TC14', () => {
+describe('Pedidos e estoque — TC11, TC12, TC13 e TC14', () => {
   it('TC13: pedido reduz estoque e nova compra sem estoque retorna 409', async () => {
     const produto = await criarProduto({ preco: 10, estoque: 5 });
     const idProduto = produto.body.id;
@@ -71,6 +71,166 @@ describe('Pedidos e estoque — TC11, TC13 e TC14', () => {
 
     const inexistente = await api.get(`/api/pedidos/${ID_INEXISTENTE}`);
     expect(inexistente.status).toBe(404);
+  });
+
+  it('TC12: checkout com sucesso devolve total, subtotais, reduz estoque e é consultável', async () => {
+    const a = await criarProduto({ preco: 12.5, estoque: 10 });
+    const b = await criarProduto({ preco: 40, estoque: 4 });
+
+    const res = await api.post('/api/pedidos').send({
+      itens: [
+        { idProduto: a.body.id, quantidade: 2 },
+        { idProduto: b.body.id, quantidade: 1 }
+      ],
+      cep: CEP_VALIDO
+    });
+
+    expect(res.status).toBe(201);
+    expect(res.headers.location).toBe(`/api/pedidos/${res.body.idPedido}`);
+    expect(res.body.total).toBe(65);
+    expect(res.body.concluido).toBe(false);
+    expect(res.body.itens).toHaveLength(2);
+    expect(res.body.itens).toEqual(expect.arrayContaining([
+      expect.objectContaining({ idProduto: a.body.id, quantidade: 2, precoUnitario: 12.5, subtotal: 25 }),
+      expect.objectContaining({ idProduto: b.body.id, quantidade: 1, precoUnitario: 40, subtotal: 40 })
+    ]));
+
+    expect((await api.get(`/api/products/${a.body.id}`)).body.estoque).toBe(8);
+    expect((await api.get(`/api/products/${b.body.id}`)).body.estoque).toBe(3);
+
+    const consultado = await api.get(`/api/pedidos/${res.body.idPedido}`);
+    expect(consultado.status).toBe(200);
+    expect(consultado.body).toEqual(res.body);
+  });
+
+  it('TC12: carrinho → pedido mantém itens e total consistentes', async () => {
+    const usuario = await criarUsuario();
+    const produto = await criarProduto({ preco: 20, estoque: 6 });
+    const usuarioId = usuario.body.id;
+
+    const add = await api
+      .post(`/api/carrinho/itens?usuarioId=${usuarioId}`)
+      .send({ idProduto: produto.body.id, quantidade: 3 });
+    expect(add.status).toBe(200);
+
+    const carrinho = await api.get(`/api/carrinho/itens?usuarioId=${usuarioId}`);
+    expect(carrinho.status).toBe(200);
+
+    const pedido = await api.post('/api/pedidos').send({
+      itens: carrinho.body.itens.map((i) => ({ idProduto: i.idProduto, quantidade: i.quantidade })),
+      cep: CEP_VALIDO,
+      usuarioId
+    });
+
+    expect(pedido.status).toBe(201);
+    expect(pedido.body.total).toBe(carrinho.body.total);
+    expect(pedido.body.itens[0]).toMatchObject({ idProduto: produto.body.id, quantidade: 3, subtotal: 60 });
+    expect((await api.get(`/api/products/${produto.body.id}`)).body.estoque).toBe(3);
+  });
+
+  it('TC13: duas compras simultâneas do último item — uma 201, outra 409, estoque 0', async () => {
+    const produto = await criarProduto({ preco: 10, estoque: 1 });
+    const corpo = { itens: [{ idProduto: produto.body.id, quantidade: 1 }], cep: CEP_VALIDO };
+
+    const [r1, r2] = await Promise.all([
+      api.post('/api/pedidos').send(corpo),
+      api.post('/api/pedidos').send(corpo)
+    ]);
+
+    expect([r1.status, r2.status].sort()).toEqual([201, 409]);
+    const final = await api.get(`/api/products/${produto.body.id}`);
+    expect(final.body.estoque).toBe(0);
+  });
+
+  // Defeito: ProductService.reservarEstoque verifica o estoque e depois decrementa em
+  // passos separados (sem transação/lock). Sob concorrência, o CHECK do banco impede
+  // estoque negativo, mas o erro vira 500 em vez de 409.
+  it.fails('TC13/DEF: várias compras simultâneas deveriam gerar só 201 ou 409 (nunca 500)', async () => {
+    const produto = await criarProduto({ preco: 10, estoque: 3 });
+    const corpo = { itens: [{ idProduto: produto.body.id, quantidade: 1 }], cep: CEP_VALIDO };
+
+    const respostas = await Promise.all(Array.from({ length: 8 }, () => api.post('/api/pedidos').send(corpo)));
+
+    expect(respostas.filter((r) => r.status === 500)).toHaveLength(0);
+    expect(respostas.filter((r) => r.status === 201)).toHaveLength(3);
+    expect(respostas.filter((r) => r.status === 409)).toHaveLength(5);
+    expect((await api.get(`/api/products/${produto.body.id}`)).body.estoque).toBe(0);
+  });
+
+  it('TC14: PATCH /:id/status com status válido retorna 200', async () => {
+    const produto = await criarProduto({ estoque: 5 });
+    const criado = await api.post('/api/pedidos').send({
+      itens: [{ idProduto: produto.body.id, quantidade: 1 }],
+      cep: CEP_VALIDO
+    });
+
+    for (const status of ['aprovado', 'preparado', 'enviado', 'entregue']) {
+      const res = await api.patch(`/api/pedidos/${criado.body.idPedido}/status`).send({ status });
+      expect(res.status).toBe(200);
+      expect(res.body.idPedido).toBe(criado.body.idPedido);
+    }
+  });
+
+  it('TC14: PATCH /:id/status com id inexistente retorna 404', async () => {
+    const res = await api.patch(`/api/pedidos/${ID_INEXISTENTE}/status`).send({ status: 'pago' });
+    expect(res.status).toBe(404);
+  });
+
+  it('TC14: PATCH /:id/status sem status ou com id inválido retorna 400', async () => {
+    const semStatus = await api.patch(`/api/pedidos/${ID_INEXISTENTE}/status`).send({});
+    expect(semStatus.status).toBe(400);
+
+    const idInvalido = await api.patch('/api/pedidos/abc/status').send({ status: 'pago' });
+    expect(idInvalido.status).toBe(400);
+  });
+
+  // Defeito: o model Pedido lança Error genérico para status inválido, que vira 500 em vez de 400.
+  it.fails('TC14/DEF: status inválido deveria retornar 400 (hoje retorna 500)', async () => {
+    const produto = await criarProduto({ estoque: 5 });
+    const criado = await api.post('/api/pedidos').send({
+      itens: [{ idProduto: produto.body.id, quantidade: 1 }],
+      cep: CEP_VALIDO
+    });
+
+    const res = await api.patch(`/api/pedidos/${criado.body.idPedido}/status`).send({ status: 'xyz-invalido' });
+    expect(res.status).toBe(400);
+  });
+
+  // Defeito: o DTO do pedido não expõe `status`, então o acompanhamento não é observável.
+  it.fails('TC14/DEF: pedido deveria expor o status atualizado', async () => {
+    const produto = await criarProduto({ estoque: 5 });
+    const criado = await api.post('/api/pedidos').send({
+      itens: [{ idProduto: produto.body.id, quantidade: 1 }],
+      cep: CEP_VALIDO
+    });
+    await api.patch(`/api/pedidos/${criado.body.idPedido}/status`).send({ status: 'enviado' });
+
+    const consultado = await api.get(`/api/pedidos/${criado.body.idPedido}`);
+    expect(consultado.body.status).toBe('enviado');
+  });
+
+  it('TC14: PUT /:id atualiza cep e concluído; valida corpo e id inexistente', async () => {
+    const produto = await criarProduto({ estoque: 5 });
+    const criado = await api.post('/api/pedidos').send({
+      itens: [{ idProduto: produto.body.id, quantidade: 1 }],
+      cep: CEP_VALIDO
+    });
+
+    const ok = await api.put(`/api/pedidos/${criado.body.idPedido}`).send({ cep: '98765-432', concluido: true });
+    expect(ok.status).toBe(200);
+    expect(ok.body).toMatchObject({ idPedido: criado.body.idPedido, cep: '98765-432', concluido: true });
+
+    const invalido = await api.put(`/api/pedidos/${criado.body.idPedido}`).send({ cep: CEP_VALIDO });
+    expect(invalido.status).toBe(400);
+
+    const inexistente = await api.put(`/api/pedidos/${ID_INEXISTENTE}`).send({ cep: CEP_VALIDO, concluido: false });
+    expect(inexistente.status).toBe(404);
+  });
+
+  it('TC14: lista aceita filtro por usuarioId inexistente sem erro', async () => {
+    const res = await api.get(`/api/pedidos?usuarioId=${ID_INEXISTENTE}`);
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual([]);
   });
 
   it('deletar pedido não concluído devolve o estoque', async () => {

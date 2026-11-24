@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { api, dadosUnicos, criarArtesao, CEP_VALIDO } from '../helpers/api.js';
 import admService from '../../src/services/AdmService.js';
+import authService from '../../src/services/AuthService.js';
 
 describe('Autenticação — TC03 e TC04', () => {
   it('TC03: login com credenciais válidas retorna 200, token e papel comprador', async () => {
@@ -53,7 +54,7 @@ describe('Autenticação — TC03 e TC04', () => {
     expect(res.body.erro).toBe('Username e senha são obrigatórios.');
   });
 
-  it('logout invalida o token', async () => {
+  it('TC04: logout encerra a sessão com sucesso', async () => {
     const { username, email } = dadosUnicos('logout');
     await api.post('/api/usuarios').send({ username, password: 'senha123', email, cep: CEP_VALIDO });
 
@@ -63,5 +64,46 @@ describe('Autenticação — TC03 e TC04', () => {
     const logout = await api.post('/api/auth/logout').set('Authorization', `Bearer ${token}`);
     expect(logout.status).toBe(200);
     expect(logout.body.mensagem).toBe('Logout realizado com sucesso.');
+  });
+
+  it('TC04: após o logout o token deixa de ser válido (sessão expirada)', async () => {
+    const { username, email } = dadosUnicos('sessaoexpirada');
+    await api.post('/api/usuarios').send({ username, password: 'senha123', email, cep: CEP_VALIDO });
+
+    const login = await api.post('/api/auth/login').send({ username, password: 'senha123' });
+    const token = login.body.token;
+
+    expect(authService.validarToken(token)).toMatchObject({ papel: 'comprador', username });
+
+    await api.post('/api/auth/logout').set('Authorization', `Bearer ${token}`);
+
+    expect(() => authService.validarToken(token)).toThrow(/inválido ou expirado/);
+  });
+
+  it('TC04: token inexistente ou ausente é rejeitado pela validação de sessão', () => {
+    expect(() => authService.validarToken('token_comprador_falso_123')).toThrow(/inválido ou expirado/);
+    expect(() => authService.validarToken(undefined)).toThrow(/inválido ou expirado/);
+  });
+
+  it('TC04: logout sem token ou com token desconhecido não quebra (200)', async () => {
+    const semToken = await api.post('/api/auth/logout');
+    expect(semToken.status).toBe(200);
+
+    const desconhecido = await api.post('/api/auth/logout').set('Authorization', 'Bearer token_qualquer');
+    expect(desconhecido.status).toBe(200);
+  });
+
+  // Defeito: nenhuma rota de negócio valida o token (exigirAuth não é usado), então a
+  // sessão expirada/encerrada não bloqueia nada. Esperado: 401.
+  it.fails('TC04/DEF01: token encerrado no logout deveria ser recusado em rota protegida', async () => {
+    const { username, email } = dadosUnicos('sessaoprotegida');
+    await api.post('/api/usuarios').send({ username, password: 'senha123', email, cep: CEP_VALIDO });
+    const login = await api.post('/api/auth/login').send({ username, password: 'senha123' });
+    const token = login.body.token;
+    await api.post('/api/auth/logout').set('Authorization', `Bearer ${token}`);
+
+    const res = await api.get('/api/carrinho').query({ usuarioId: login.body.usuario.id }).set('Authorization', `Bearer ${token}`);
+
+    expect(res.status).toBe(401);
   });
 });

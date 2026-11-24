@@ -34,14 +34,9 @@ function produtoToDto(produto) {
 }
 
 async function garantirCategoria(nome) {
-  if (!nome || !nome.trim()) {
-    return null;
-  }
-  let categoria = await prisma.categoria.findUnique({ where: { nome: nome.trim() } });
-  if (!categoria) {
-    categoria = await prisma.categoria.create({ data: { nome: nome.trim() } });
-  }
-  return categoria;
+  if (!nome || !nome.trim()) return null;
+  const n = nome.trim();
+  return prisma.categoria.upsert({ where: { nome: n }, update: {}, create: { nome: n } });
 }
 
 async function garantirArtesao(artesaoId) {
