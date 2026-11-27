@@ -1,0 +1,5 @@
+{"timestamp":"2026-11-27T19:54:59.419Z","funcao":"buscarProdutoPorIdIA","origem":"rota:GET /api/recomendacoes/ia/produto/:id","parametros":{"id":"prod-001"},"quantidadeRetornada":1,"sucesso":true}
+{"timestamp":"2026-11-27T19:54:59.425Z","funcao":"listarProdutosAtivosIA","origem":"rota:GET /api/recomendacoes/ia/produto/:id","parametros":{},"quantidadeRetornada":12,"sucesso":true}
+{"timestamp":"2026-11-27T19:54:59.428Z","funcao":"buscarProdutoPorIdIA","origem":"rota:GET /api/recomendacoes/ia/produto/:id","parametros":{"id":"prod-012"},"quantidadeRetornada":1,"sucesso":true}
+{"timestamp":"2026-11-27T19:54:59.429Z","funcao":"listarProdutosAtivosIA","origem":"rota:GET /api/recomendacoes/ia/produto/:id","parametros":{},"quantidadeRetornada":12,"sucesso":true}
+{"timestamp":"2026-11-27T19:54:59.431Z","funcao":"buscarProdutoPorIdIA","origem":"rota:GET /api/recomendacoes/ia/produto/:id","parametros":{"id":"prod-999"},"quantidadeRetornada":0,"sucesso":true}

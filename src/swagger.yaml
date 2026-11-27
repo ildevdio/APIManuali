@@ -916,6 +916,84 @@ paths:
                 items:
                   $ref: '#/components/schemas/GetProductDto'
 
+  /api/recomendacoes/ia/produto/{id}:
+    get:
+      summary: Recomendação de produtos com IA (por produto)
+      description: Usa IA para sugerir produtos relacionados/complementares. Requer AI_API_KEY (ou OPENAI_API_KEY) no .env.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: limite
+          in: query
+          schema:
+            type: integer
+            default: 4
+      responses:
+        '200':
+          description: Recomendações geradas pela IA
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  produto:
+                    type: object
+                  recomendacoes:
+                    type: array
+                    items:
+                      type: object
+                  justificativa:
+                    type: string
+                  modelo:
+                    type: string
+        '400':
+          description: IA não configurada ou entrada inválida
+        '404':
+          description: Produto não encontrado
+
+  /api/recomendacoes/ia/busca:
+    post:
+      summary: Busca/recomendação de produtos com IA (por texto)
+      description: Usa IA para encontrar produtos relevantes para a consulta do usuário. Requer AI_API_KEY (ou OPENAI_API_KEY) no .env.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - consulta
+              properties:
+                consulta:
+                  type: string
+                  example: "quero um presente artesanal de cerâmica para decoração"
+                limite:
+                  type: integer
+                  default: 4
+      responses:
+        '200':
+          description: Recomendações geradas pela IA
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  consulta:
+                    type: string
+                  recomendacoes:
+                    type: array
+                    items:
+                      type: object
+                  justificativa:
+                    type: string
+                  modelo:
+                    type: string
+        '400':
+          description: IA não configurada ou entrada inválida
+
   /api/admin/metricas/vendas:
     get:
       summary: Indicadores de vendas

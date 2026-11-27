@@ -18,13 +18,12 @@ class AuthService {
     };
 
     const handler = handlers[tipo];
-    let usuario = null;
-    let papel = 'comprador';
-
-    if (handler) {
-      usuario = await handler.service.autenticar(username, password);
-      papel = handler.papel;
+    if (!handler) {
+      throw new BadRequestError(`Tipo de login inválido: '${tipo}'.`);
     }
+
+    const usuario = await handler.service.autenticar(username, password);
+    const papel = handler.papel;
 
     if (!usuario) {
       throw new BadRequestError('Credenciais inválidas.');
@@ -39,8 +38,8 @@ class AuthService {
         id: usuario.id ?? usuario.idAdm,
         username: usuario.username,
         email: usuario.email,
-        papel
-      }
+        papel,
+      },
     };
   }
 

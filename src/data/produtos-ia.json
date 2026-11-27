@@ -1,0 +1,134 @@
+[
+  {
+    "id": "prod-001",
+    "nome": "Vaso de Cerâmica Marajoara",
+    "descricao": "Vaso artesanal inspirado na arte marajoara, pintado à mão com pigmentos naturais.",
+    "preco": 189.90,
+    "categoria": "Cerâmica",
+    "estoque": 8,
+    "ativo": true,
+    "artesaoId": "art-001",
+    "historia": "Peça produzida com argila local e queimada em forno de baixa temperatura."
+  },
+  {
+    "id": "prod-002",
+    "nome": "Prato Decorativo em Cerâmica",
+    "descricao": "Prato decorativo esmaltado, ideal para parede ou mesa de centro.",
+    "preco": 129.50,
+    "categoria": "Cerâmica",
+    "estoque": 12,
+    "ativo": true,
+    "artesaoId": "art-001",
+    "historia": "Esmaltação feita manualmente, cada peça possui variações únicas."
+  },
+  {
+    "id": "prod-003",
+    "nome": "Cesto de Palha Trançada",
+    "descricao": "Cesto organizador feito com fibra natural trançada, resistente e leve.",
+    "preco": 79.90,
+    "categoria": "Palha e Fibras",
+    "estoque": 20,
+    "ativo": true,
+    "artesaoId": "art-002",
+    "historia": "Técnica de trançado transmitida por gerações na comunidade local."
+  },
+  {
+    "id": "prod-004",
+    "nome": "Bolsa de Palha Buriti",
+    "descricao": "Bolsa artesanal de palha de buriti com alça reforçada e fechamento interno.",
+    "preco": 149.00,
+    "categoria": "Palha e Fibras",
+    "estoque": 6,
+    "ativo": true,
+    "artesaoId": "art-002",
+    "historia": "Produzida a partir de fibras coletadas de forma sustentável."
+  },
+  {
+    "id": "prod-005",
+    "nome": "Colar de Sementes Amazônicas",
+    "descricao": "Colar artesanal feito com sementes naturais e acabamento em fio encerado.",
+    "preco": 59.90,
+    "categoria": "Biojoias",
+    "estoque": 15,
+    "ativo": true,
+    "artesaoId": "art-003",
+    "historia": "Cada semente é selecionada e polida manualmente antes da montagem."
+  },
+  {
+    "id": "prod-006",
+    "nome": "Brincos de Casca Natural",
+    "descricao": "Brincos leves feitos com casca natural tratada e base hipoalergênica.",
+    "preco": 45.00,
+    "categoria": "Biojoias",
+    "estoque": 25,
+    "ativo": true,
+    "artesaoId": "art-003",
+    "historia": "Peça de biojoia que valoriza materiais naturais da floresta."
+  },
+  {
+    "id": "prod-007",
+    "nome": "Manta de Algodão Tecida à Mão",
+    "descricao": "Manta decorativa em algodão cru com padrão geométrico tecido em tear manual.",
+    "preco": 220.00,
+    "categoria": "Têxtil",
+    "estoque": 5,
+    "ativo": true,
+    "artesaoId": "art-004",
+    "historia": "Tecida em tear de pedal, levando cerca de dois dias por peça."
+  },
+  {
+    "id": "prod-008",
+    "nome": "Jogo Americano Bordado",
+    "descricao": "Conjunto com 4 peças bordadas à mão em linho natural.",
+    "preco": 135.00,
+    "categoria": "Têxtil",
+    "estoque": 10,
+    "ativo": true,
+    "artesaoId": "art-004",
+    "historia": "Bordado com pontos tradicionais, inspirado na flora regional."
+  },
+  {
+    "id": "prod-009",
+    "nome": "Escultura em Madeira Reciclada",
+    "descricao": "Escultura decorativa esculpida em madeira reaproveitada, acabamento encerado.",
+    "preco": 260.00,
+    "categoria": "Madeira",
+    "estoque": 3,
+    "ativo": true,
+    "artesaoId": "art-005",
+    "historia": "Feita a partir de sobras de madeira de marcenaria local."
+  },
+  {
+    "id": "prod-010",
+    "nome": "Tábua de Corte Artesanal",
+    "descricao": "Tábua de corte em madeira maciça com tratamento alimentar natural.",
+    "preco": 98.00,
+    "categoria": "Madeira",
+    "estoque": 14,
+    "ativo": true,
+    "artesaoId": "art-005",
+    "historia": "Produzida com madeira certificada e óleo mineral para acabamento."
+  },
+  {
+    "id": "prod-011",
+    "nome": "Luminária de Cabaça Entalhada",
+    "descricao": "Luminária artesanal feita de cabaça seca com entalhes geométricos que projetam luz.",
+    "preco": 175.00,
+    "categoria": "Decoração",
+    "estoque": 4,
+    "ativo": true,
+    "artesaoId": "art-006",
+    "historia": "Cada cabaça é selecionada, seca e entalhada manualmente."
+  },
+  {
+    "id": "prod-012",
+    "nome": "Miniatura de Barco em Escama de Peixe",
+    "descricao": "Peça decorativa única feita com escamas de peixe tratadas e coladas artesanalmente.",
+    "preco": 320.00,
+    "categoria": "Arte Pesqueira",
+    "estoque": 1,
+    "ativo": true,
+    "artesaoId": "art-007",
+    "historia": "Técnica rara de artesanato regional, com produção limitada e sem itens semelhantes no catálogo."
+  }
+]
