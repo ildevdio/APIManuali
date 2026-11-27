@@ -142,6 +142,116 @@ Exemplo:
 PORT=4000 npm start
 ```
 
+## Módulo de IA — Entrega AV2
+
+Módulo de recomendação/busca inteligente de produtos artesanais do Manuali. O módulo recebe uma entrada (ID de produto ou consulta textual), consulta os dados do catálogo **apenas por funções de acesso** e devolve recomendações. Quando um provedor LLM OpenAI-compatible está configurado, a IA gera a justificativa; sem LLM, o módulo usa fallback local por regra simples (similaridade de categoria/busca textual), garantindo repetibilidade.
+
+### 1) Como instalar e rodar
+
+Pré-requisitos: Node.js 20+.
+
+```bash
+npm install
+npm run dev
+```
+
+Servidor padrão: `http://localhost:3001` (ou `PORT` definido no `.env`).  
+Swagger: `http://localhost:3001/api-docs`.  
+Health: `http://localhost:3001/health`.
+
+> O módulo de IA funciona sem banco externo e sem chave de LLM: os dados estão mockados em `src/data/produtos-ia.json` e o serviço usa fallback local quando a IA externa não está disponível.
+
+### 2) Mini dicionário de dados
+
+Arquivo: `src/data/produtos-ia.json` (12 registros, sem dados pessoais reais).
+
+| Campo | Tipo | Significado no negócio |
+|---|---|---|
+| `id` | string | Identificador único do produto no catálogo. Usado para buscar/recomendar um item específico. |
+| `nome` | string | Nome comercial do produto exibido ao cliente. |
+| `descricao` | string | Descrição curta do produto; ajuda a identificar material, uso e apelo comercial. |
+| `preco` | number | Preço unitário do produto em reais (R$). |
+| `categoria` | string | Categoria artesanal do produto (ex.: Cerâmica, Biojoias). Usada para similaridade/recomendação. |
+| `estoque` | number | Quantidade disponível para venda; indica disponibilidade do item. |
+| `ativo` | boolean | Indica se o produto está ativo no catálogo e pode ser recomendado. |
+| `artesaoId` | string | Identificador interno do artesão responsável pela peça (sem dado pessoal). |
+| `historia` | string | Contexto/história da peça; agrega valor e pode ser usado na justificativa da recomendação. |
+
+**Caso difícil incluído:** `prod-012` ("Miniatura de Barco em Escama de Peixe") está na categoria `Arte Pesqueira`, única no catálogo, sem itens semelhantes da mesma categoria. Também há o caso de identificador inexistente (`prod-999`) tratado pelas funções/serviço.
+
+### 3) Funções de acesso
+
+Arquivo: `src/services/IADataAccess.js`. O módulo de IA (`IARecomendacaoService`) chega aos dados **somente** por essas funções; rotas/ferramentas não abrem o JSON diretamente.
+
+| Função | Parâmetros | Retorno | Tratamento de não encontrado/erro | Valor ao cliente |
+|---|---|---|---|---|
+| `buscarProdutoPorIdIA(id, origem)` | `id`, `origem` | Objeto do produto ou `null` | Se ID não existe, retorna `null` e registra log com `quantidadeRetornada: 0`. Erros de leitura/parse geram log com `sucesso:false` e exceção clara. | Permite localizar o produto base para recomendação por item. |
+| `listarProdutosAtivosIA(origem)` | `origem` | Array de produtos ativos (pode ser vazio) | Retorna `[]` quando não há ativos; erros são logados com `sucesso:false`. | Fornece candidatos do catálogo para recomendação/busca. |
+| `buscarProdutosPorCategoriaIA(categoria, origem)` | `categoria`, `origem` | Array de produtos ativos da categoria (pode ser vazio) | Categoria vazia/sem match retorna `[]`; erros são logados com `sucesso:false`. | Permite filtrar candidatos por categoria artesanal. |
+
+**Experiência simples (dado alterado muda resposta):**
+1. Chame `GET /api/recomendacoes/ia/produto/prod-001?limite=2` e observe as recomendações.
+2. Edite `src/data/produtos-ia.json`, alterando a `categoria` de `prod-002` de `"Cerâmica"` para `"Decoração"`.
+3. Chame o mesmo endpoint novamente: `prod-002` deixa de ser priorizado como "mesma categoria" no fallback local (ou muda o contexto enviado à IA).
+4. Revertar a alteração após o teste.
+
+### 4) Como gerar o log com três chamadas repetíveis
+
+O log é gravado em `logs/ia-uso-dados.jsonl` (uma linha JSON por chamada de função de acesso, sem apagar anteriores). Para começar limpo, apague o arquivo antes do teste.
+
+#### Opção A — via API (professor pode repetir)
+
+Com o servidor rodando (`npm run dev`):
+
+```bash
+# Limpar log (Linux/macOS/Git Bash)
+rm -f logs/ia-uso-dados.jsonl
+
+# 1) Produto existente (gera buscarProdutoPorIdIA + listarProdutosAtivosIA)
+curl "http://localhost:3001/api/recomendacoes/ia/produto/prod-001?limite=2"
+
+# 2) Caso difícil: produto sem similares da mesma categoria (Arte Pesqueira)
+curl "http://localhost:3001/api/recomendacoes/ia/produto/prod-012?limite=2"
+
+# 3) Caso difícil: identificador inexistente (tratamento claro de não encontrado)
+curl "http://localhost:3001/api/recomendacoes/ia/produto/prod-999?limite=2"
+```
+
+PowerShell (alternativa):
+
+```powershell
+Remove-Item logs\ia-uso-dados.jsonl -ErrorAction SilentlyContinue
+Invoke-RestMethod "http://localhost:3001/api/recomendacoes/ia/produto/prod-001?limite=2"
+Invoke-RestMethod "http://localhost:3001/api/recomendacoes/ia/produto/prod-012?limite=2"
+try { Invoke-RestMethod "http://localhost:3001/api/recomendacoes/ia/produto/prod-999?limite=2" } catch { $_.Exception.Message }
+```
+
+#### Opção B — sem subir servidor (repete o mesmo módulo/funções)
+
+```bash
+node --input-type=module -e "import fs from 'fs'; fs.rmSync('logs/ia-uso-dados.jsonl',{force:true}); import svc from './src/services/IARecomendacaoService.js'; const o='rota:GET /api/recomendacoes/ia/produto/:id'; console.log(await svc.recomendarPorProduto('prod-001',2,o)); console.log(await svc.recomendarPorProduto('prod-012',2,o)); try{await svc.recomendarPorProduto('prod-999',2,o)}catch(e){console.log(e.message)}"
+```
+
+### 5) Como ver o resumo
+
+```bash
+node scripts/ia-resumo-log.js
+```
+
+O script lê `logs/ia-uso-dados.jsonl` e mostra: total de chamadas, erros, chamadas por função, registros mais consultados por ID, registros nunca consultados por ID e respostas sugeridas para (a)(b)(c).
+
+### 6) Respostas (a), (b), (c)
+
+Com base no log gerado pelas 3 chamadas acima (5 linhas de acesso a dados):
+
+- **(a) Qual dado o módulo mais usa?** A função mais usada foi `buscarProdutoPorIdIA` (3 chamadas), seguida de `listarProdutosAtivosIA` (2 chamadas). Isso mostra que o módulo consulta primeiro o produto base por ID e depois carrega o catálogo ativo para montar os candidatos de recomendação.
+- **(b) Algum dado nunca foi usado — o que isso sugere?** Os registros `prod-002` a `prod-011` não foram consultados diretamente por ID (apenas `prod-001`, `prod-012` e `prod-999` foram passados como ID). Isso sugere que os cenários de teste focaram em casos específicos; os demais itens só entraram indiretamente como candidatos no `listarProdutosAtivosIA`, não como alvo direto da busca por ID.
+- **(c) Houve erro — por quê?** Não houve erro nas funções de acesso (`sucesso:true` em todas as 5 linhas). O caso `prod-999` (ID inexistente) foi tratado de forma controlada: `buscarProdutoPorIdIA` retornou `quantidadeRetornada: 0` e o serviço respondeu com erro claro `Produto com Id prod-999 não foi encontrado.`.
+
+### 7) Declaração de uso de IA generativa
+
+Foi utilizada IA generativa (assistente de codificação/modelo de linguagem) para apoiar a implementação do módulo, estruturação do logger/resumo e redação desta documentação. O código, os dados mockados, os testes manuais e a validação do comportamento foram revisados pela equipe.
+
 ## Licença
 
 MIT

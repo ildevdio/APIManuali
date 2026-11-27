@@ -31,7 +31,11 @@ router.get('/destaque', asyncHandler(async (req, res) => {
 // GET: /api/recomendacoes/ia/produto/:id?limite=4
 router.get('/ia/produto/:id', asyncHandler(async (req, res) => {
   const limite = req.query.limite ? parseInt(req.query.limite, 10) : 4;
-  const resultado = await iaRecomendacaoService.recomendarPorProduto(req.params.id, limite);
+  const resultado = await iaRecomendacaoService.recomendarPorProduto(
+    req.params.id,
+    limite,
+    'rota:GET /api/recomendacoes/ia/produto/:id'
+  );
   res.json(resultado);
 }));
 
@@ -43,7 +47,11 @@ router.post('/ia/busca', validate({
   }
 }), asyncHandler(async (req, res) => {
   const { consulta, limite } = req.body || {};
-  const resultado = await iaRecomendacaoService.buscarPorTexto(consulta, limite || 4);
+  const resultado = await iaRecomendacaoService.buscarPorTexto(
+    consulta,
+    limite || 4,
+    'rota:POST /api/recomendacoes/ia/busca'
+  );
   res.json(resultado);
 }));
 
