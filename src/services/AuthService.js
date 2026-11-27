@@ -6,7 +6,7 @@ import { BadRequestError, UnauthorizedError } from '../utils/errors.js';
 const tokens = new Map();
 
 class AuthService {
-  login({ username, password, tipo = 'usuario' }) {
+  async login({ username, password, tipo = 'usuario' }) {
     if (!username || !password) {
       throw new BadRequestError('Username e senha são obrigatórios.');
     }
@@ -18,11 +18,11 @@ class AuthService {
     };
 
     const handler = handlers[tipo];
-    if (!handler) {
-      usuario = null;
-      papel = 'comprador';
-    } else {
-      usuario = handler.service.autenticar(username, password);
+    let usuario = null;
+    let papel = 'comprador';
+
+    if (handler) {
+      usuario = await handler.service.autenticar(username, password);
       papel = handler.papel;
     }
 
