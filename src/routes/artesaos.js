@@ -6,6 +6,15 @@ import { validate } from '../middleware/validate.js';
 const router = express.Router();
 
 const schemas = {
+  criar: {
+    body: {
+      username: { type: 'string', required: true, min: 3, max: 50 },
+      password: { type: 'string', required: true, min: 6 },
+      email: { type: 'email', required: true },
+      cep: { type: 'cep', required: true },
+      cpf: { type: 'cpfCnpj', required: true }
+    }
+  },
   buscarPorUsername: {
     query: {
       username: { type: 'string', required: true, min: 1, max: 100 }
@@ -16,25 +25,15 @@ const schemas = {
       id: { type: 'uuid', required: true }
     }
   },
-  criar: {
-    body: {
-      username: { type: 'string', required: true, min: 3, max: 50 },
-      password: { type: 'string', required: true, min: 6 },
-      email: { type: 'email', required: true },
-      cep: { type: 'cep', required: true },
-      cpf: { type: 'cpf', required: true }
-    }
-  },
   atualizar: {
     params: {
       id: { type: 'uuid', required: true }
     },
     body: {
       username: { type: 'string', required: true, min: 3, max: 50 },
-      password: { type: 'string', required: false, min: 6 },
       email: { type: 'email', required: true },
       cep: { type: 'cep', required: true },
-      cpf: { type: 'cpf', required: true }
+      cpf: { type: 'cpfCnpj', required: true }
     }
   },
   deletar: {
@@ -43,12 +42,6 @@ const schemas = {
     }
   }
 };
-
-// GET: /api/artesaos
-router.get('/', asyncHandler(async (req, res) => {
-  const artesaos = artesaoService.listar();
-  res.json(artesaos);
-}));
 
 // GET: /api/artesaos/search?username=maria
 router.get('/search', validate(schemas.buscarPorUsername), asyncHandler(async (req, res) => {

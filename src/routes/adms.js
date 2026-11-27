@@ -60,10 +60,9 @@ router.get('/:id', validate(schemas.buscarPorId), asyncHandler(async (req, res) 
   res.json(adm);
 }));
 
-// POST: /api/adms
-router.post('/', validate(schemas.criar), asyncHandler(async (req, res) => {
-  const adm = await admService.criar(req.body);
-  res.status(201).location(`/api/adms/${adm.idAdm}`).json(adm);
+// POST: /api/adms (cadastro de ADM desabilitado)
+router.post('/', asyncHandler(async (_req, res) => {
+  return res.status(403).json({ erro: 'Cadastro de administrador não é permitido.' });
 }));
 
 // PUT: /api/adms/5

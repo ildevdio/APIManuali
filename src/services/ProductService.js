@@ -58,6 +58,15 @@ async function garantirArtesao(artesaoId) {
 }
 
 class ProductService {
+  _normalizarFotos(dto, atuais = []) {
+    if (Array.isArray(dto.fotos) && dto.fotos.length) return dto.fotos.filter(Boolean);
+    if (Array.isArray(dto.urlImagensGaleria) && dto.urlImagensGaleria.length) return dto.urlImagensGaleria.filter(Boolean);
+    if (dto.urlImagem) return [dto.urlImagem];
+    if (dto.imagem) return [dto.imagem];
+    if (dto.url) return [dto.url];
+    return atuais;
+  }
+
   async criar(dto) {
     if (dto.preco < 0) {
       throw new BadRequestError('Preço deve ser maior que zero.');
@@ -65,6 +74,7 @@ class ProductService {
 
     const categoria = await garantirCategoria(dto.categoria);
     const artesaoId = await garantirArtesao(dto.artesaoId);
+    const fotos = this._normalizarFotos(dto, []);
 
     const produto = await prisma.product.create({
       data: {
@@ -73,7 +83,7 @@ class ProductService {
         preco: dto.preco,
         estoque: dto.estoque || 0,
         ativo: dto.ativo !== undefined ? dto.ativo : true,
-        fotos: dto.fotos || [],
+        fotos,
         historia: dto.historia || null,
         artesaoId,
         categoriaId: categoria?.id
@@ -124,6 +134,8 @@ class ProductService {
     const categoria = await garantirCategoria(dto.categoria);
     const artesaoId = await garantirArtesao(dto.artesaoId);
 
+    const fotos = this._normalizarFotos(dto, existente.fotos || []);
+
     const produto = await prisma.product.update({
       where: { id },
       data: {
@@ -132,7 +144,7 @@ class ProductService {
         preco: dto.preco,
         estoque: dto.estoque,
         ativo: dto.ativo,
-        fotos: dto.fotos || [],
+        fotos,
         historia: dto.historia || null,
         artesaoId,
         categoriaId: categoria?.id
