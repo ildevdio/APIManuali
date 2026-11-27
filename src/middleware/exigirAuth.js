@@ -1,4 +1,4 @@
-import { asyncHandler } from './asyncHandler.js';
+import { asyncHandler } from '../utils/asyncHandler.js';
 import AuthService from '../services/AuthService.js';
 
 const exigirAuth = (papel) => asyncHandler(async (req, res, next) => {
