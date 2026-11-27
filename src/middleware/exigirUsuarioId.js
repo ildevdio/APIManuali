@@ -1,4 +1,4 @@
-import { asyncHandler } from './asyncHandler.js';
+import { asyncHandler } from '../utils/asyncHandler.js';
 
 const exigirUsuarioId = asyncHandler(async (req, res, next) => {
   const { usuarioId } = req.query;
