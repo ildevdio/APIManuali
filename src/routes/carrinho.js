@@ -22,7 +22,7 @@ const schemas = {
 
 // GET: /api/carrinho - ver carrinho do usuário (usuárioId via query ou body)
 router.get('/', exigirUsuarioId, asyncHandler(async (req, res) => {
-  const carrinho = carrinhoService.obterOuCriar(req.usuarioId);
+  const carrinho = await carrinhoService.obterOuCriar(req.usuarioId);
   res.json(carrinho);
 }));
 
