@@ -12,7 +12,7 @@ const schemas = {
       password: { type: 'string', required: true, min: 6 },
       email: { type: 'email', required: true },
       cep: { type: 'cep', required: true },
-      cpf: { type: 'cpf', required: true }
+      cpf: { type: 'cpfCnpj', required: true }
     }
   },
   buscarPorUsername: {
@@ -33,7 +33,7 @@ const schemas = {
       username: { type: 'string', required: true, min: 3, max: 50 },
       email: { type: 'email', required: true },
       cep: { type: 'cep', required: true },
-      cpf: { type: 'cpf', required: true }
+      cpf: { type: 'cpfCnpj', required: true }
     }
   },
   deletar: {

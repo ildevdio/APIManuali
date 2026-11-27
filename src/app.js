@@ -18,6 +18,7 @@ import {
   recomendacoesRouter,
   adminRouter
 } from './routes/index.js';
+import compatRouter from './routes/compat.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -54,6 +55,7 @@ export function createApp() {
   app.use('/api/avaliacoes', avaliacoesRouter);
   app.use('/api/recomendacoes', recomendacoesRouter);
   app.use('/api/admin', adminRouter);
+  app.use('/api/v1', compatRouter);
 
   // Health check
   app.get('/health', (req, res) => {
