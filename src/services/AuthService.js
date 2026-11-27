@@ -38,8 +38,8 @@ class AuthService {
         id: usuario.id ?? usuario.idAdm,
         username: usuario.username,
         email: usuario.email,
-        papel
-      }
+        papel,
+      },
     };
   }
 
