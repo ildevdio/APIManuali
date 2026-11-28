@@ -9,6 +9,7 @@ import usuarioService from '../services/UsuarioService.js';
 import artesaoService from '../services/ArtesaoService.js';
 import carrinhoService from '../services/CarrinhoService.js';
 import pedidoService from '../services/PedidoService.js';
+import { createSerialQueue } from '../utils/serialQueue.js';
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -406,13 +407,23 @@ function pedidoToFrontend(p) {
   };
 }
 
+const filasCheckout = new Map();
+function filaCheckoutDo(usuarioId) {
+  if (!filasCheckout.has(usuarioId)) filasCheckout.set(usuarioId, createSerialQueue());
+  return filasCheckout.get(usuarioId);
+}
+
 router.post('/checkout', asyncHandler(async (req, res) => {
   const usuarioId = reqUsuarioId(req);
-  const carrinho = await carrinhoService.listarItens(usuarioId);
-  if (!carrinho.itens?.length) return res.status(400).json({ erro: 'Carrinho vazio.' });
-  const itens = carrinho.itens.filter(i => !i.produtoNaoEncontrado).map(i => ({ idProduto: i.idProduto, quantidade: i.quantidade }));
-  const pedido = await pedidoService.criar({ itens, cep: '00000-000', usuarioId, endereco: 'Endereço não informado' });
-  try { await carrinhoService.limpar(usuarioId); } catch {}
+  const pedido = await filaCheckoutDo(usuarioId).enqueue(async () => {
+    const carrinho = await carrinhoService.listarItens(usuarioId);
+    if (!carrinho.itens?.length) return null;
+    const itens = carrinho.itens.filter(i => !i.produtoNaoEncontrado).map(i => ({ idProduto: i.idProduto, quantidade: i.quantidade }));
+    const criado = await pedidoService.criar({ itens, cep: '00000-000', usuarioId, endereco: 'Endereço não informado' });
+    try { await carrinhoService.limpar(usuarioId); } catch {}
+    return criado;
+  });
+  if (!pedido) return res.status(400).json({ erro: 'Carrinho vazio.' });
   const dto = pedidoToFrontend(pedido.toGetDto ? pedido.toGetDto() : pedido);
   // enrich names
   dto.nomeComprador = req.body?.nomeComprador || 'Comprador';
