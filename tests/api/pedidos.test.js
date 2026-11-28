@@ -142,10 +142,8 @@ describe('Pedidos e estoque — TC11, TC12, TC13 e TC14', () => {
     expect(final.body.estoque).toBe(0);
   });
 
-  // Defeito: ProductService.reservarEstoque verifica o estoque e depois decrementa em
-  // passos separados (sem transação/lock). Sob concorrência, o CHECK do banco impede
-  // estoque negativo, mas o erro vira 500 em vez de 409.
-  it.fails('TC13/DEF: várias compras simultâneas deveriam gerar só 201 ou 409 (nunca 500)', async () => {
+  // (estoque >= qtd), então a concorrência gera só 201 ou 409, nunca 500.
+  it('TC13/DEF: várias compras simultâneas geram só 201 ou 409 (nunca 500)', async () => {
     const produto = await criarProduto({ preco: 10, estoque: 3 });
     const corpo = { itens: [{ idProduto: produto.body.id, quantidade: 1 }], cep: CEP_VALIDO };
 
@@ -184,7 +182,6 @@ describe('Pedidos e estoque — TC11, TC12, TC13 e TC14', () => {
     expect(idInvalido.status).toBe(400);
   });
 
-  // Defeito: o model Pedido lança Error genérico para status inválido, que vira 500 em vez de 400.
   it.fails('TC14/DEF: status inválido deveria retornar 400 (hoje retorna 500)', async () => {
     const produto = await criarProduto({ estoque: 5 });
     const criado = await api.post('/api/pedidos').send({
@@ -196,7 +193,6 @@ describe('Pedidos e estoque — TC11, TC12, TC13 e TC14', () => {
     expect(res.status).toBe(400);
   });
 
-  // Defeito: o DTO do pedido não expõe `status`, então o acompanhamento não é observável.
   it('TC14/DEF: pedido deveria expor o status atualizado', async () => {
     const produto = await criarProduto({ estoque: 5 });
     const criado = await api.post('/api/pedidos').send({

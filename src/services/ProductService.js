@@ -189,21 +189,29 @@ class ProductService {
       }
     }
 
-    const reservados = [];
-    for (const { idProduto, quantidade } of pedidos) {
-      const produto = mapa.get(idProduto);
-      await prisma.product.update({
-        where: { id: idProduto },
-        data: { estoque: { decrement: quantidade } }
-      });
-      reservados.push({
-        idProduto,
-        quantidade,
-        precoUnitario: Number(produto.preco)
-      });
-    }
+    // Reserva atômica: cada decremento só acontece se ainda houver estoque (UPDATE condicional),
+    // e tudo roda numa transação — se qualquer item falhar, nada é reservado (rollback).
+    // Ordenar por id mantém a mesma ordem de lock entre pedidos concorrentes (evita deadlock).
+    const ordenados = [...pedidos].sort((a, b) => (a.idProduto < b.idProduto ? -1 : a.idProduto > b.idProduto ? 1 : 0));
 
-    return reservados;
+    await prisma.$transaction(async (tx) => {
+      for (const { idProduto, quantidade } of ordenados) {
+        const { count } = await tx.product.updateMany({
+          where: { id: idProduto, ativo: true, estoque: { gte: quantidade } },
+          data: { estoque: { decrement: quantidade } }
+        });
+        if (count === 0) {
+          const produto = mapa.get(idProduto);
+          throw new ConflictError(`Estoque insuficiente para '${produto.nome}'.`);
+        }
+      }
+    });
+
+    return pedidos.map(({ idProduto, quantidade }) => ({
+      idProduto,
+      quantidade,
+      precoUnitario: Number(mapa.get(idProduto).preco)
+    }));
   }
 
   async devolverEstoque(itens) {
